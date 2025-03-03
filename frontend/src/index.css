@@ -1,0 +1,9 @@
+/* Make sure dropdown has a background color and text is visible */
+.navbar-dark .navbar-nav .dropdown-menu {
+  background-color: #ffffff !important; /* White background */
+  color: #000000 !important; /* Black text */
+}
+
+.navbar-dark .navbar-nav .dropdown-item:hover {
+  background-color: #f8f9fa !important; /* Slight gray for hover effect */
+}
