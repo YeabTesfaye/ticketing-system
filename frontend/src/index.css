@@ -1,9 +1,17 @@
-/* Make sure dropdown has a background color and text is visible */
-.navbar-dark .navbar-nav .dropdown-menu {
-  background-color: #ffffff !important; /* White background */
-  color: #000000 !important; /* Black text */
+/* Ensure the dropdown and its items are styled correctly in Chrome */
+.navbar-dark .navbar-nav .nav-dropdown-menu {
+  background-color: #343a40 !important; /* Ensure background color stays dark */
+  color: #fff !important; /* Ensure text color is white */
 }
 
-.navbar-dark .navbar-nav .dropdown-item:hover {
-  background-color: #f8f9fa !important; /* Slight gray for hover effect */
+.navbar-dark .navbar-nav .nav-dropdown-item {
+  color: #fff !important; /* Ensure item text is white */
+}
+
+.navbar-dark .navbar-nav .nav-dropdown-item:hover {
+  background-color: #495057 !important; /* Slight gray hover effect */
+}
+
+.navbar-nav .nav-dropdown-toggle {
+  color: #fff !important; /* Ensure the dropdown title text is white */
 }

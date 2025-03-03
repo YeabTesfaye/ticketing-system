@@ -38,7 +38,7 @@ const Header = () => {
                   <NavDropdown
                     title={userInfo.name}
                     id="username"
-                    className="text-light" // Ensure the text is light on dark background
+                    className="text-light" 
                   >
                     <Nav.Link as={Link} to="/profile" className="text-dark">
                       Profile

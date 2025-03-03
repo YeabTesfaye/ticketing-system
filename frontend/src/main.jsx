@@ -9,7 +9,8 @@ import HomeScreen from '../screens/HomeScreen.jsx';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginScreen from '../screens/LoginScreen.jsx';
 import RegisterScreen from '../screens/RegisterScreen.jsx';
-
+import PrivateRoute from '../components/PrivateRoute.jsx';
+import ProfileScreen from '../screens/ProfileScreen.jsx';
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
     <StrictMode>
@@ -19,6 +20,9 @@ createRoot(document.getElementById('root')).render(
             <Route index={true} path="/" element={<HomeScreen />} />
             <Route index={true} path="/login" element={<LoginScreen />} />
             <Route index={true} path="/register" element={<RegisterScreen />} />
+            <Route path="" element={<PrivateRoute />}>
+              <Route path="/profile" element={<ProfileScreen />} />
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>

@@ -3,26 +3,23 @@ import asyncHandler from 'express-async-handler';
 import User from '../models/User.js';
 
 export const protect = asyncHandler(async (req, res, next) => {
-  const token = req.cookies.jwt;
+  let token;
 
-  if (!token) {
-    res.status(401);
-    throw new Error('Not Authorized, No Token');
-  }
+  token = req.cookies.jwt;
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.userId).select('-password');
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = await User.findById(decoded.userId).select('-password');
 
-    if (!req.user) {
+      next();
+    } catch (error) {
       res.status(401);
-      throw new Error('Not Authorized, User Not Found');
+      throw new Error(`Not Authorized Invalid Token`);
     }
-
-    next();
-  } catch (error) {
+  } else {
     res.status(401);
-    throw new Error('Not Authorized, Invalid Token');
+    throw new Error(`Not Authorized No Token`);
   }
 });
 
@@ -34,4 +31,3 @@ export const admin = (req, res, next) => {
     throw new Error('Not authorized as admin');
   }
 };
-

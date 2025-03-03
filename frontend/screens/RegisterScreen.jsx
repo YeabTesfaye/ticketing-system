@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRegisterMutation } from '../src/slices/usersApiSlice';
 import { setCredentials } from '../src/slices/autSlice';
+import Loader from '../components/Loader';
 
 const RegisterScreen = () => {
   const [name, setName] = useState('');
@@ -34,8 +35,8 @@ const RegisterScreen = () => {
     }
     try {
       const res = await register({ email, password, name }).unwrap();
-      dispatch(setCredentials(res)); // Ensure the payload is correct
-      navigate('/'); // Redirect after successful login
+      dispatch(setCredentials(res)); 
+      navigate('/'); 
     } catch (err) {
       toast.error(err?.data?.message || err?.error || 'An error occurred');
     }
@@ -84,7 +85,7 @@ const RegisterScreen = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
         </Form.Group>
-
+        {isLoading && <Loader />}
         <Button variant="primary" type="submit" className="mt-3">
           Sign Up
         </Button>
