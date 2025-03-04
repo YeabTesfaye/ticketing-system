@@ -31,15 +31,21 @@ export const createTicket = asyncHandler(async (req, res) => {
 // @route GET /api/tickets
 // @access Private
 export const getTickets = asyncHandler(async (req, res) => {
-  let tickets;
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
 
-  if (req.user.role === 'admin') {
-    tickets = await Ticket.find().populate('user', 'name email'); // Admin sees all
-  } else {
-    tickets = await Ticket.find({ user: req.user._id }); // User sees only their own tickets
-  }
+  const totalTickets = await Ticket.countDocuments({ user: req.user._id });
+  const tickets = await Ticket.find({ user: req.user._id })
+    .skip(skip)
+    .limit(limit);
 
-  res.status(200).json(tickets);
+  res.json({
+    tickets,
+    totalTickets,
+    totalPages: Math.ceil(totalTickets / limit),
+    currentPage: page,
+  });
 });
 
 // @desc Update ticket status
@@ -71,5 +77,48 @@ export const updateTicket = asyncHandler(async (req, res) => {
       return res.status(400).json({ errors: error.errors });
     }
     throw error;
+  }
+});
+
+// @desc Get a specific ticket by ID
+// @route GET /api/tickets/:id
+// @access Private
+export const getTicketById = asyncHandler(async (req, res) => {
+  try {
+    const ticket = await Ticket.findById(req.params.id).populate(
+      'user',
+      'name email',
+    );
+
+    if (!ticket) {
+      res.status(404);
+      throw new Error('Ticket not found');
+    }
+    res.status(200).json(ticket);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Server Error', error: error.message });
+    throw new Error('Server Error');
+  }
+});
+
+// @desc Delete a specific ticket by ID
+// @route Delete /api/tickets/:id
+// @access Private
+export const deleteTicket = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const ticket = await Ticket.findById(id);
+
+    if (!ticket) {
+      res.status(404);
+      throw new Error('Ticket not found');
+    }
+    // Delete the ticket
+    await Ticket.findByIdAndDelete(id);
+    res.status(200).json({ message: 'Ticket deleted successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Server Error', error: error.message });
   }
 });

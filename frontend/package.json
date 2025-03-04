@@ -20,7 +20,8 @@
     "react-router-bootstrap": "^0.26.3",
     "react-router-dom": "^7.2.0",
     "react-toastify": "^11.0.5",
-    "universal-cookie": "^7.2.2"
+    "universal-cookie": "^7.2.2",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
