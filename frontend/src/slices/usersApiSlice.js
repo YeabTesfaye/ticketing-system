@@ -1,6 +1,6 @@
 import { apiSlices } from './apiSlice';
 
-const BASE_URL = 'https://ticketing-system-10.onrender.com/api/users';
+const BASE_URL = '/api/users';
 // Helper function to construct URLs
 const constructUrl = (endpoint, params = '') =>
   `${BASE_URL}${endpoint}${params}`;
