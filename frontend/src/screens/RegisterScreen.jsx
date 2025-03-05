@@ -30,6 +30,11 @@ const RegisterScreen = () => {
       navigate('/');
     }
   }, [user, navigate]);
+  useEffect(() => {
+    if (!isLoading && user) {
+      navigate('/login'); // Navigate to login after registration is complete
+    }
+  }, [isLoading, user, navigate]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -46,8 +51,8 @@ const RegisterScreen = () => {
       // If validation passes, proceed with registration
       try {
         const res = await register({ name, email, password }).unwrap();
-        dispatch(setCredentials(res)); // Dispatch user & token separately
-        navigate('/login'); // Redirect after successful registration
+        dispatch(setCredentials(res));
+        navigate('/login');
       } catch (err) {
         toast.error(err?.data?.message || err?.error || 'Registration failed');
         // Reset form data if registration fails
