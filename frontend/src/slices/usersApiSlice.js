@@ -1,56 +1,65 @@
 import { apiSlices } from './apiSlice';
 
-const USERS_URL = 'https://ticketing-system-4.onrender.com/api/users';
+const BASE_URL = 'https://ticketing-system-5.onrender.com/api/users';
+
+// Helper function to construct URLs
+const constructUrl = (endpoint, params = '') =>
+  `${BASE_URL}${endpoint}${params}`;
 
 export const usersApiSlice = apiSlices.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/auth`,
+        url: constructUrl('/auth'),
         method: 'POST',
         body: data,
         credentials: 'include',
       }),
     }),
+
     register: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}`,
+        url: constructUrl(''),
         method: 'POST',
         body: data,
         credentials: 'include',
       }),
     }),
+
     updateUser: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}/profile`,
+        url: constructUrl('/profile'),
         method: 'PUT',
         body: data,
-
         credentials: 'include',
       }),
     }),
+
     logout: builder.mutation({
       query: () => ({
-        url: `${USERS_URL}/logout`,
+        url: constructUrl('/logout'),
         method: 'POST',
         credentials: 'include',
       }),
     }),
+
     createUser: builder.mutation({
       query: (data) => ({
-        url: `${USERS_URL}`,
+        url: constructUrl(''),
         method: 'POST',
         body: data,
       }),
     }),
+
     getUsers: builder.query({
       query: ({ page = 1, limit = 10 }) =>
-        `/api/users?page=${page}&limit=${limit}`,
+        constructUrl(`?page=${page}&limit=${limit}`),
       providesTags: ['Users'],
     }),
+
     deleteUser: builder.mutation({
       query: (userId) => ({
-        url: `/api/users/${userId}`,
+        url: constructUrl(`/${userId}`),
         method: 'DELETE',
       }),
       invalidatesTags: ['Users'],
