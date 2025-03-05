@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import Loader from '../components/Loader';
 import { useUpdateUserMutation } from '../slices/usersApiSlice';
 import { setCredentials } from '../slices/autSlice';
+import { useNavigate } from 'react-router-dom';
 const ProfileScreen = () => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -14,6 +15,7 @@ const ProfileScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.auth);
 
@@ -38,8 +40,8 @@ const ProfileScreen = () => {
         }).unwrap();
         dispatch(setCredentials(res));
         toast.success('Profile updated successfully');
+        navigate('/');
       } catch (err) {
-        console.log(err);
         toast.error(err?.data?.message || err.error);
       }
     }

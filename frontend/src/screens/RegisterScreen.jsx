@@ -23,13 +23,13 @@ const RegisterScreen = () => {
   const dispatch = useDispatch();
 
   const [register, { isLoading }] = useRegisterMutation();
-  const { user, token } = useSelector((state) => state.auth); // Updated state
+  const { user } = useSelector((state) => state.auth); // Updated state
 
   useEffect(() => {
-    if (user && token) {
-      navigate('/'); // Redirect to home page
+    if (user) {
+      navigate('/'); 
     }
-  }, [user, token, navigate]);
+  }, [user, navigate]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -47,7 +47,7 @@ const RegisterScreen = () => {
       try {
         const res = await register({ name, email, password }).unwrap();
         dispatch(setCredentials(res)); // Dispatch user & token separately
-        navigate('/'); // Redirect after successful registration
+        navigate('/login'); // Redirect after successful registration
       } catch (err) {
         toast.error(err?.data?.message || err?.error || 'Registration failed');
       }

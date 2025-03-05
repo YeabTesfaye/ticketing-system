@@ -3,7 +3,6 @@ import { connectDB } from '../utils/db.js';
 import User from '../models/User.js';
 import Ticket from '../models/Ticket.js';
 import dotenv from 'dotenv';
-import bcrypt from 'bcryptjs';
 dotenv.config();
 
 const seedData = async () => {
@@ -12,25 +11,27 @@ const seedData = async () => {
     await User.deleteMany({});
     await Ticket.deleteMany({});
 
-    // Hash password for users
-    const hashedPassword = await bcrypt.hash('password123', 10);
-
     // Create admin user
     const adminUser = await User.create({
       name: 'Admin User',
       email: 'admin@example.com',
-      password: hashedPassword,
+      password: 'password123',
       role: 'admin',
     });
 
-    // Create regular user
-    await User.create({
-      name: 'Regular User',
-      email: 'user@example.com',
-      password: hashedPassword,
-      role: 'user',
-    });
+    // Create 19 regular user
+    const users = [];
+    for (let i = 1; i <= 19; i++) {
+      users.push({
+        name: `User ${i}`,
+        email: `user${i}@example.com`,
+        password: 'password123',
+        role: 'user',
+      });
+    }
 
+    // Insert regular users
+    await User.insertMany(users);
     console.log('Users have been seeded');
 
     // Create 20 tickets for the admin user

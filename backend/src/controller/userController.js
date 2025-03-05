@@ -17,7 +17,12 @@ export const authUser = asyncHandler(async (req, res) => {
     const validatedData = loginSchema.parse(req.body);
     const { email, password } = validatedData;
 
+    console.log(email, password);
+
     const user = await User.findOne({ email });
+
+    console.log(user);
+    const iMatch = user.matchPasswords(password);
 
     if (user && (await user.matchPasswords(password))) {
       res.status(200).json({
@@ -65,7 +70,6 @@ export const registerUser = asyncHandler(async (req, res) => {
 
     if (user) {
       res.status(201).json({
-        token: generateToken(user._id),
         user: {
           _id: user._id,
           name: user.name,
@@ -116,10 +120,13 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
       user.password = req.body.password;
     }
     const updatedUser = await user.save();
-    res.status(200).json({
-      _id: updatedUser._id,
-      name: updatedUser.name,
-      email: updatedUser.email,
+    return res.status(200).json({
+      user: {
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+      },
+      token: generateToken(user._id),
     });
   } else {
     res.status(404);
