@@ -6,11 +6,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
-      proxy: {
-        '/api': {
-          target: 'https://ticketing-system-10.onrender.com',
-          changeOrigin: true,
-        },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
       },
+    },
   },
 });
