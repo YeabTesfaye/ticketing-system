@@ -27,7 +27,7 @@ const RegisterScreen = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/'); 
+      navigate('/');
     }
   }, [user, navigate]);
 
@@ -50,6 +50,11 @@ const RegisterScreen = () => {
         navigate('/login'); // Redirect after successful registration
       } catch (err) {
         toast.error(err?.data?.message || err?.error || 'Registration failed');
+        // Reset form data if registration fails
+        setName('');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
       }
     } catch (err) {
       if (err instanceof z.ZodError) {

@@ -17,11 +17,8 @@ export const authUser = asyncHandler(async (req, res) => {
     const validatedData = loginSchema.parse(req.body);
     const { email, password } = validatedData;
 
-    console.log(email, password);
-
     const user = await User.findOne({ email });
 
-    console.log(user);
     const iMatch = user.matchPasswords(password);
 
     if (user && (await user.matchPasswords(password))) {
@@ -167,7 +164,6 @@ export const createUser = asyncHandler(async (req, res) => {
       throw new Error('Invalid user data');
     }
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
 });

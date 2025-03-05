@@ -26,7 +26,7 @@ const CreateUserScreen = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-  
+
     if (!name || !email || !password || !role) {
       setError('All fields are required');
       return;
@@ -41,6 +41,10 @@ const CreateUserScreen = () => {
     } catch {
       // Handle API errors (e.g., user already exists, invalid data)
       toast.error(apiError?.data?.message || 'Error creating user');
+      // Reset form data if registration fails
+      setName('');
+      setEmail('');
+      setPassword('');
     }
   };
 

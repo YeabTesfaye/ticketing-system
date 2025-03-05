@@ -43,6 +43,11 @@ const ProfileScreen = () => {
         navigate('/');
       } catch (err) {
         toast.error(err?.data?.message || err.error);
+        // Reset form data if registration fails
+        setName('');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
       }
     }
   };

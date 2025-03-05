@@ -45,6 +45,9 @@ const LoginScreen = () => {
         toast.error(
           err?.data?.message || err?.error || 'Invalid email or password',
         );
+        // Reset form data if registration fails
+        setEmail('');
+        setPassword('');
       }
     } catch (err) {
       if (err instanceof z.ZodError) {

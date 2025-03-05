@@ -96,7 +96,6 @@ export const getTicketById = asyncHandler(async (req, res) => {
     }
     res.status(200).json(ticket);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: 'Server Error', error: error.message });
     throw new Error('Server Error');
   }
@@ -118,7 +117,6 @@ export const deleteTicket = asyncHandler(async (req, res) => {
     await Ticket.findByIdAndDelete(id);
     res.status(200).json({ message: 'Ticket deleted successfully' });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
 });

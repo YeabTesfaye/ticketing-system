@@ -8,7 +8,10 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://ticketing-system-3.onrender.com',
+        changeOrigin: true, // Ensures the correct origin header is sent
+        secure: true, // This is important if your API is not using HTTPS, but since it's HTTPS in your case, you can keep it true.
+        rewrite: (path) => path.replace(/^\/api/, ''), // Removes the `/api` prefix when making the request
       },
     },
   },
