@@ -16,7 +16,7 @@ app.use(
   cors({
     origin: [
       'http://localhost:3000', // Local development
-      'https://ticketing-system-frontend-2.onrender.com', // Deployed frontend,
+      'https://ticketing-system-8.onrender.com', // Deployed frontend,
     ],
     credentials: true,
   }),
