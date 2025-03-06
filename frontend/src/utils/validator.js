@@ -46,7 +46,6 @@ export const createTicketSchema = z.object({
     .max(1000, 'Ticket description must not exceed 1000 characters'),
 });
 
-
 export const profileUpdateSchema = z.object({
   name: z
     .string()
@@ -59,6 +58,12 @@ export const profileUpdateSchema = z.object({
   password: z
     .string()
     .optional()
-    .min(6, 'Password must be at least 6 characters long')
-    .max(20, 'Password cannot exceed 20 characters'),
+    .refine(
+      (val) => !val || val.length >= 6,
+      'Password must be at least 6 characters long',
+    ) // Validate if exists
+    .refine(
+      (val) => !val || val.length <= 20,
+      'Password cannot exceed 20 characters',
+    ),
 });
