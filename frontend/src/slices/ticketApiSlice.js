@@ -15,8 +15,10 @@ const ticketApiSlice = apiSlices.injectEndpoints({
       }),
     }),
     getTickets: builder.query({
-      query: ({ page = 1, limit = 10 }) =>
-        `${TICKETS_URL}?page=${page}&limit=${limit}`,
+      query: ({ page, limit }) => ({
+        url: TICKETS_URL,
+        params: { page, limit },
+      }),
       providesTags: ['Tickets'],
     }),
     getTicketById: builder.query({

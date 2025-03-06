@@ -1,27 +1,77 @@
 import { useState } from 'react';
-import { Container, Table, Button, Pagination } from 'react-bootstrap';
+import { Container, Button } from 'react-bootstrap';
 import { useGetTicketsQuery } from '../slices/ticketApiSlice';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { formatId } from '../utils';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 const MyTicketsScreen = () => {
   const navigate = useNavigate();
-  const [page, setPage] = useState(1);
-  const limit = 10;
 
-  const { data, isLoading, error } = useGetTicketsQuery({ page, limit });
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  });
 
-  if (isLoading) return <Loader />;
+  const queryParams = {
+    page: paginationModel.page + 1,
+    limit: paginationModel.pageSize,
+  };
+
+  const { data, isLoading, error } = useGetTicketsQuery(queryParams, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  const columns = [
+    {
+      field: 'id',
+      headerName: 'ID',
+      width: 150,
+      valueGetter: (value, row) => formatId(row._id),
+    },
+    { field: 'title', headerName: 'Title', width: 180 },
+    { field: 'description', headerName: 'Description', width: 300 },
+    { field: 'status', headerName: 'Status', width: 120 },
+    {
+      field: 'actions',
+      headerName: 'Action',
+      width: 130,
+      renderCell: (params) => (
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => navigate(`/ticket/${params.row?._id}`)}
+        >
+          View Details
+        </Button>
+      ),
+    },
+  ];
+
+  if (isLoading && !data) return <Loader />;
   if (error) return <Message variant="danger">Error loading tickets!</Message>;
 
+  const rows = (data?.tickets || []).map((ticket) => ({
+    _id: ticket._id,
+    id: ticket._id,
+    title: ticket.title,
+    description: ticket.description,
+    status: ticket.status,
+  }));
+
+  // Calculate total width of columns (optional for explicit width)
+  const totalColumnWidth = columns.reduce(
+    (sum, col) => sum + (col.width || 0),
+    0,
+  );
+
   return (
-    <Container className="py-5">
+    <Container className="py-5 d-flex flex-column align-items-center justify-content-center">
       <h1 className="text-center mb-4">My Tickets</h1>
 
-      {data?.tickets.length === 0 ? (
+      {rows.length === 0 ? (
         <div className="d-flex flex-column align-items-center justify-content-center text-center">
           <Message variant="info">You have no tickets yet.</Message>
           <div className="d-flex gap-3 mt-3">
@@ -34,62 +84,31 @@ const MyTicketsScreen = () => {
           </div>
         </div>
       ) : (
-        <>
-          <Table striped bordered hover responsive className="table-sm">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.tickets.map((ticket) => (
-                <tr key={ticket._id}>
-                  <td>{formatId(ticket._id)}</td>
-                  <td>{ticket.title}</td>
-                  <td>{ticket.description}</td>
-                  <td>{ticket.status}</td>
-                  <td>
-                    <Button
-                      variant="primary"
-                      onClick={() => navigate(`/ticket/${ticket._id}`)}
-                    >
-                      View Details
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-
-          {/* Pagination Controls */}
-          {data.totalPages > 1 && (
-            <Pagination className="justify-content-center">
-              <Pagination.Prev
-                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                disabled={page === 1}
-              />
-              {[...Array(data.totalPages)].map((_, index) => (
-                <Pagination.Item
-                  key={index + 1}
-                  active={index + 1 === page}
-                  onClick={() => setPage(index + 1)}
-                >
-                  {index + 1}
-                </Pagination.Item>
-              ))}
-              <Pagination.Next
-                onClick={() =>
-                  setPage((prev) => Math.min(prev + 1, data.totalPages))
-                }
-                disabled={page === data.totalPages}
-              />
-            </Pagination>
-          )}
-        </>
+        <div
+          style={{
+            width: 'fit-content',
+            minWidth: totalColumnWidth,
+            maxHeight: '500px',
+          }}
+        >
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            paginationMode="server"
+            rowCount={data?.totalTickets || 0}
+            loading={isLoading}
+            paginationModel={paginationModel}
+            onPaginationModelChange={(newModel) => setPaginationModel(newModel)}
+            pageSizeOptions={[5, 10, 25]}
+            components={{ Toolbar: GridToolbar }}
+            disableColumnMenu
+            initialState={{
+              sorting: {
+                sortModel: [{ field: 'id', sort: 'desc' }],
+              },
+            }}
+          />
+        </div>
       )}
     </Container>
   );

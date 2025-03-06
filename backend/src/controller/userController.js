@@ -137,6 +137,7 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
 export const createUser = asyncHandler(async (req, res) => {
   try {
     const validatedData = createUserSchema.parse(req.body);
+    console.log('Received Data:'.validatedData);
     const { name, email, password, role } = validatedData;
     const userExists = await User.findOne({ email });
 

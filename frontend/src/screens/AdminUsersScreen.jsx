@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import { Container, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { Table, Button, Container, Pagination } from 'react-bootstrap';
 import {
   useGetUsersQuery,
   useDeleteUserMutation,
@@ -9,99 +9,129 @@ import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
+import { formatId } from '../utils';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 const AdminUsersScreen = () => {
   const navigate = useNavigate();
-  const [page, setPage] = useState(1);
-  const limit = 10; 
-
-  const { data, isLoading, error } = useGetUsersQuery({ page, limit });
-  const [deleteUser] = useDeleteUserMutation();
   const { user } = useSelector((state) => state.auth);
 
+  // Pagination model for DataGrid
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0, // 0-based for MUI
+    pageSize: 10,
+  });
+
+  const queryParams = {
+    page: paginationModel.page + 1, // 1-based for API
+    limit: paginationModel.pageSize,
+  };
+
+  const { data, isLoading, error } = useGetUsersQuery(queryParams, {
+    refetchOnMountOrArgChange: true, // Ensure refetch on param change
+  });
+
+  const [deleteUser] = useDeleteUserMutation();
+
+  // Redirect non-admins
   if (user?.role !== 'admin') {
     navigate('/');
+    return null;
   }
+
+  // Define columns for DataGrid
+  const columns = [
+    {
+      field: 'id',
+      headerName: 'ID',
+      width: 120,
+      valueGetter: (value, row) => formatId(row._id),
+    },
+    { field: 'name', headerName: 'Name', width: 150 },
+    { field: 'email', headerName: 'Email', width: 180 },
+    { field: 'role', headerName: 'Role', width: 100 },
+    {
+      field: 'actions',
+      headerName: 'Action',
+      width: 110,
+      renderCell: (params) =>
+        params.row.role !== 'admin' ? (
+          <Button
+            variant="danger"
+            size="sm"
+            onClick={() => deleteHandler(params.row._id)}
+          >
+            Delete
+          </Button>
+        ) : null,
+    },
+  ];
 
   const deleteHandler = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
         await deleteUser(userId).unwrap();
         toast.success('User deleted successfully');
+        window.location.reload();
       } catch (err) {
         toast.error(err?.data?.message || 'Error deleting user');
       }
     }
   };
 
+  if (isLoading && !data) return <Loader />;
+  if (error)
+    return (
+      <Message variant="danger">
+        {error?.data?.message || 'Error loading users'}
+      </Message>
+    );
+
+  const rows = (data?.users || []).map((u) => ({
+    _id: u._id,
+    id: u._id, // DataGrid requires 'id'
+    name: u.name,
+    email: u.email,
+    role: u.role,
+  }));
+
+  // Calculate total width of columns for tight fit
+  const totalColumnWidth = columns.reduce(
+    (sum, col) => sum + (col.width || 0),
+    0,
+  );
+
   return (
-    <Container className="py-5">
-      <h1 className="text-center mb-4">Manage Users</h1>
+    <Container className="py-5 d-flex flex-column align-items-center justify-content-center">
+      <h1 className="px-5 mb-4">Manage Users</h1>
 
-      {isLoading ? (
-        <Loader />
-      ) : error ? (
-        <Message variant="danger">
-          {error?.data?.message || 'Error loading users'}
-        </Message>
+      {rows.length === 0 ? (
+        <Message variant="info">No users found.</Message>
       ) : (
-        <>
-          <Table striped bordered hover responsive className="table-sm">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.users.map((u) => (
-                <tr key={u._id}>
-                  <td>{u._id}</td>
-                  <td>{u.name}</td>
-                  <td>{u.email}</td>
-                  <td>{u.role}</td>
-                  <td>
-                    {u.role !== 'admin' && (
-                      <Button
-                        variant="danger"
-                        className="btn-sm"
-                        onClick={() => deleteHandler(u._id)}
-                      >
-                        Delete
-                      </Button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-
-          {/* Pagination */}
-          <Pagination className="justify-content-center">
-            <Pagination.Prev
-              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-              disabled={page === 1}
-            />
-            {Array.from({ length: data.totalPages }, (_, i) => (
-              <Pagination.Item
-                key={i + 1}
-                active={i + 1 === page}
-                onClick={() => setPage(i + 1)}
-              >
-                {i + 1}
-              </Pagination.Item>
-            ))}
-            <Pagination.Next
-              onClick={() =>
-                setPage((prev) => Math.min(prev + 1, data.totalPages))
-              }
-              disabled={page === data.totalPages}
-            />
-          </Pagination>
-        </>
+        <div
+          style={{
+            width: 'fit-content', // Fit to column content
+            minWidth: totalColumnWidth,
+            maxHeight: '600px',
+          }}
+        >
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            paginationMode="server"
+            rowCount={data?.totalUsers || 0}
+            loading={isLoading}
+            paginationModel={paginationModel}
+            onPaginationModelChange={(newModel) => setPaginationModel(newModel)}
+            pageSizeOptions={[5, 10, 25]}
+            components={{ Toolbar: GridToolbar }}
+            initialState={{
+              sorting: {
+                sortModel: [{ field: 'id', sort: 'desc' }],
+              },
+            }}
+          />
+        </div>
       )}
     </Container>
   );

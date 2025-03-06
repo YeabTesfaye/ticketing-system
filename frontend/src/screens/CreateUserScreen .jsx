@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -6,45 +5,41 @@ import { useCreateUserMutation } from '../slices/usersApiSlice';
 import FormContainer from '../components/FormContainer';
 import { toast } from 'react-toastify';
 import Loader from '../components/Loader';
+import { createUserSchema } from '../utils/validator';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 
 const CreateUserScreen = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('user');
-  const [error, setError] = useState(null);
-
   const navigate = useNavigate();
-
-  const [createUser, { isLoading, error: apiError }] = useCreateUserMutation();
-
   const { user } = useSelector((state) => state.auth);
 
+  // If the user is not an admin, redirect
   if (user?.role !== 'admin') {
     navigate('/');
   }
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
+  const [createUser, { isLoading }] = useCreateUserMutation();
 
-    if (!name || !email || !password || !role) {
-      setError('All fields are required');
-      return;
-    }
+  // React Hook Form for validation
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(createUserSchema),
+  });
 
-    setError(null); // Clear any previous errors
-
+  // Submit Handler
+  const onSubmit = async (data) => {
     try {
-      await createUser({ name, email, password, role }).unwrap();
+      console.log(data);
+      await createUser(data).unwrap();
       toast.success('User created successfully');
-      navigate('/admin/users'); // Redirect to the user list page after creating a user
-    } catch {
-      // Handle API errors (e.g., user already exists, invalid data)
-      toast.error(apiError?.data?.message || 'Error creating user');
-      // Reset form data if registration fails
-      setName('');
-      setEmail('');
-      setPassword('');
+      navigate('/admin/users');
+      reset(); // Reset form after success
+    } catch (error) {
+      toast.error(error?.data?.message || 'Error creating user');
     }
   };
 
@@ -52,18 +47,15 @@ const CreateUserScreen = () => {
     <FormContainer>
       <h1>Create User</h1>
 
-      {/* Show any form-level error */}
-      {error && <div className="alert alert-danger">{error}</div>}
-
-      <Form onSubmit={submitHandler}>
+      <Form onSubmit={handleSubmit(onSubmit)}>
         <Form.Group className="my-2" controlId="name">
           <Form.Label>Name</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          ></Form.Control>
+            {...register('name')}
+          />
+          {errors.name && <p className="text-danger">{errors.name.message}</p>}
         </Form.Group>
 
         <Form.Group className="my-2" controlId="email">
@@ -71,9 +63,11 @@ const CreateUserScreen = () => {
           <Form.Control
             type="email"
             placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          ></Form.Control>
+            {...register('email')}
+          />
+          {errors.email && (
+            <p className="text-danger">{errors.email.message}</p>
+          )}
         </Form.Group>
 
         <Form.Group className="my-2" controlId="password">
@@ -81,21 +75,20 @@ const CreateUserScreen = () => {
           <Form.Control
             type="password"
             placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          ></Form.Control>
+            {...register('password')}
+          />
+          {errors.password && (
+            <p className="text-danger">{errors.password.message}</p>
+          )}
         </Form.Group>
 
         <Form.Group className="my-2" controlId="role">
           <Form.Label>Role</Form.Label>
-          <Form.Control
-            as="select"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-          >
+          <Form.Control as="select" {...register('role')}>
             <option value="user">User</option>
             <option value="admin">Admin</option>
           </Form.Control>
+          {errors.role && <p className="text-danger">{errors.role.message}</p>}
         </Form.Group>
 
         <Button

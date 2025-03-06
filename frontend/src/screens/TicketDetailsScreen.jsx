@@ -11,6 +11,7 @@ import Loader from '../components/Loader';
 import Message from '../components/Message';
 import StatusButton from '../components/StatusButton ';
 import ConfirmationDialog from '../components/ConfirmationDialog';
+import { toast } from 'react-toastify';
 
 const TicketDetailsScreen = () => {
   const { id } = useParams();
@@ -38,8 +39,7 @@ const TicketDetailsScreen = () => {
       // Refresh the page after status update
       window.location.reload();
     } catch (err) {
-      console.error('Error updating status', err);
-      alert('Failed to update ticket status');
+      toast.error(err?.data?.message || 'Failed to update ticket status');
     }
   };
 
@@ -48,8 +48,7 @@ const TicketDetailsScreen = () => {
       await deleteTicket(id).unwrap();
       navigate('/tickets');
     } catch (err) {
-      console.error('Error deleting ticket', err);
-      alert('Failed to delete the ticket');
+      toast.error(err?.data?.message || 'Failed to delete the ticket');
     }
   };
 

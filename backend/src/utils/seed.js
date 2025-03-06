@@ -36,7 +36,7 @@ const seedData = async () => {
 
     // Create 20 tickets for the admin user
     const tickets = [];
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= 200; i++) {
       tickets.push({
         user: adminUser._id,
         title: `Ticket ${i}`,

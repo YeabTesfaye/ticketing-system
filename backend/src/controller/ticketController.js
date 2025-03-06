@@ -9,13 +9,12 @@ import asyncHandler from 'express-async-handler';
 export const createTicket = asyncHandler(async (req, res) => {
   try {
     const validatedData = createTicketSchema.parse(req.body);
-    const { title, description, status } = validatedData;
+    const { title, description } = validatedData;
 
     const ticket = await Ticket.create({
       user: req.user._id,
       title,
       description,
-      status,
     });
 
     res.status(201).json(ticket);
@@ -34,6 +33,8 @@ export const getTickets = asyncHandler(async (req, res) => {
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 10;
   const skip = (page - 1) * limit;
+
+  console.log(page, limit);
 
   const totalTickets = await Ticket.countDocuments({ user: req.user._id });
   const tickets = await Ticket.find({ user: req.user._id })
