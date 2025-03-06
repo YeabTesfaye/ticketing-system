@@ -64,14 +64,8 @@ export const updateTicket = asyncHandler(async (req, res) => {
       throw new Error('Ticket not found');
     }
 
-    if (req.user.role !== 'admin') {
-      res.status(403);
-      throw new Error('Not authorized');
-    }
-
     ticket.status = status;
     await ticket.save();
-
     res.status(200).json(ticket);
   } catch (error) {
     if (error instanceof ZodError) {

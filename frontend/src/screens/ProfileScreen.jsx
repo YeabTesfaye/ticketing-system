@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-// import { Link, useNavigate } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import FormContainer from '../components/FormContainer';
@@ -8,26 +7,37 @@ import Loader from '../components/Loader';
 import { useUpdateUserMutation } from '../slices/usersApiSlice';
 import { setCredentials } from '../slices/autSlice';
 import { useNavigate } from 'react-router-dom';
-const ProfileScreen = () => {
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { profileUpdateSchema } from '../utils/validator';
 
+const ProfileScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.auth);
-
   const [updateProfile, { isLoading }] = useUpdateUserMutation();
 
-  useEffect(() => {
-    setName(user.name);
-    setEmail(user.email);
-  }, [user.email, user.name]);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm({
+    resolver: zodResolver(profileUpdateSchema), 
+  });
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  useEffect(() => {
+    setValue('name', user.name);
+    setValue('email', user.email);
+  }, [user, setValue]);
+
+  const submitHandler = async (data) => {
+    const { name, email, password } = data;
+
     if (password !== confirmPassword) {
       toast.error('Passwords do not match');
     } else {
@@ -43,47 +53,58 @@ const ProfileScreen = () => {
         navigate('/');
       } catch (err) {
         toast.error(err?.data?.message || err.error);
-        // Reset form data if registration fails
-        setName('');
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
       }
     }
   };
+
   return (
     <FormContainer>
       <h1>Update Profile</h1>
-
-      <Form onSubmit={submitHandler}>
+      <Form onSubmit={handleSubmit(submitHandler)}>
+        {/* Name Field */}
         <Form.Group className="my-2" controlId="name">
           <Form.Label>Name</Form.Label>
           <Form.Control
-            type="name"
+            type="text"
             placeholder="Enter name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          ></Form.Control>
+            {...register('name')} // Register with react-hook-form
+            isInvalid={!!errors.name} // Show error if validation fails
+          />
+          {errors.name && (
+            <div className="invalid-feedback">{errors.name.message}</div>
+          )}
         </Form.Group>
+
+        {/* Email Field */}
         <Form.Group className="my-2" controlId="email">
           <Form.Label>Email Address</Form.Label>
           <Form.Control
             type="email"
             placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          ></Form.Control>
+            {...register('email')} // Register with react-hook-form
+            isInvalid={!!errors.email} // Show error if validation fails
+          />
+          {errors.email && (
+            <div className="invalid-feedback">{errors.email.message}</div>
+          )}
         </Form.Group>
+
+        {/* Password Field */}
         <Form.Group className="my-2" controlId="password">
           <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
             placeholder="Enter password"
-            value={password}
+            {...register('password')} // Register with react-hook-form
             onChange={(e) => setPassword(e.target.value)}
-          ></Form.Control>
+            isInvalid={!!errors.password} // Show error if validation fails
+          />
+          {errors.password && (
+            <div className="invalid-feedback">{errors.password.message}</div>
+          )}
         </Form.Group>
 
+        {/* Confirm Password Field */}
         <Form.Group className="my-2" controlId="confirmPassword">
           <Form.Label>Confirm Password</Form.Label>
           <Form.Control
@@ -91,7 +112,11 @@ const ProfileScreen = () => {
             placeholder="Confirm password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-          ></Form.Control>
+            isInvalid={password && password !== confirmPassword} // Password mismatch validation
+          />
+          {password && password !== confirmPassword && (
+            <div className="invalid-feedback">Passwords do not match</div>
+          )}
         </Form.Group>
 
         <Button type="submit" variant="primary" className="mt-3">

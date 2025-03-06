@@ -1,6 +1,4 @@
-// RegisterScreen.jsx
-
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,84 +7,65 @@ import { useRegisterMutation } from '../slices/usersApiSlice';
 import { setCredentials } from '../slices/autSlice';
 import { toast } from 'react-toastify';
 import Loader from '../components/Loader';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema } from '../utils/validator';
-import { z } from 'zod';
 
 const RegisterScreen = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [errors, setErrors] = useState({});
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const { user } = useSelector((state) => state.auth);
   const [register, { isLoading }] = useRegisterMutation();
-  const { user } = useSelector((state) => state.auth); // Updated state
 
   useEffect(() => {
     if (user) {
       navigate('/');
     }
   }, [user, navigate]);
+
   useEffect(() => {
     if (!isLoading && user) {
-      navigate('/login'); // Navigate to login after registration is complete
+      navigate('/login'); 
     }
   }, [isLoading, user, navigate]);
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
+  const {
+    register: formRegister,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(registerSchema), 
+  });
 
-    // Validate with Zod
+  const submitHandler = async (data) => {
     try {
-      registerSchema.parse({
-        name,
-        email,
-        password,
-        confirmPassword,
-      });
+      const { name, email, password } = data;
 
       // If validation passes, proceed with registration
-      try {
-        const res = await register({ name, email, password }).unwrap();
-        dispatch(setCredentials(res));
-        navigate('/login');
-      } catch (err) {
-        toast.error(err?.data?.message || err?.error || 'Registration failed');
-        // Reset form data if registration fails
-        setName('');
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-      }
+      const res = await register({ name, email, password }).unwrap();
+      dispatch(setCredentials(res));
+      navigate('/login');
     } catch (err) {
-      if (err instanceof z.ZodError) {
-        // If validation fails, set errors
-        const validationErrors = err.errors.reduce((acc, curr) => {
-          acc[curr.path[0]] = curr.message;
-          return acc;
-        }, {});
-        setErrors(validationErrors); // Set errors for form display
-      }
+      toast.error(err?.data?.message || err?.error || 'Registration failed');
     }
   };
 
   return (
     <FormContainer>
       <h1>Sign Up</h1>
-      <Form onSubmit={submitHandler}>
+      <Form onSubmit={handleSubmit(submitHandler)}>
         <Form.Group className="my-2" controlId="name">
           <Form.Label>Name</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            {...formRegister('name')} // Integrate react-hook-form
             isInvalid={!!errors.name} // Show error if exists
           />
-          {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+          {errors.name && (
+            <div className="invalid-feedback">{errors.name.message}</div>
+          )}
         </Form.Group>
 
         <Form.Group className="my-2" controlId="email">
@@ -94,12 +73,11 @@ const RegisterScreen = () => {
           <Form.Control
             type="email"
             placeholder="Enter Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...formRegister('email')}
             isInvalid={!!errors.email} // Show error if exists
           />
           {errors.email && (
-            <div className="invalid-feedback">{errors.email}</div>
+            <div className="invalid-feedback">{errors.email.message}</div>
           )}
         </Form.Group>
 
@@ -108,12 +86,11 @@ const RegisterScreen = () => {
           <Form.Control
             type="password"
             placeholder="Enter Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            {...formRegister('password')}
             isInvalid={!!errors.password} // Show error if exists
           />
           {errors.password && (
-            <div className="invalid-feedback">{errors.password}</div>
+            <div className="invalid-feedback">{errors.password.message}</div>
           )}
         </Form.Group>
 
@@ -122,12 +99,13 @@ const RegisterScreen = () => {
           <Form.Control
             type="password"
             placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            {...formRegister('confirmPassword')}
             isInvalid={!!errors.confirmPassword} // Show error if exists
           />
           {errors.confirmPassword && (
-            <div className="invalid-feedback">{errors.confirmPassword}</div>
+            <div className="invalid-feedback">
+              {errors.confirmPassword.message}
+            </div>
           )}
         </Form.Group>
 

@@ -77,13 +77,11 @@ const TicketDetailsScreen = () => {
                     <StatusButton
                       status="In Progress"
                       currentStatus={ticket.status}
-                      isAdmin={user?.role === 'admin'}
                       onClick={() => handleUpdateStatus('In Progress')}
                     />
                     <StatusButton
                       status="Closed"
                       currentStatus={ticket.status}
-                      isAdmin={user?.role === 'admin'}
                       onClick={() => handleUpdateStatus('Closed')}
                     />
                   </>
@@ -93,7 +91,6 @@ const TicketDetailsScreen = () => {
                   <StatusButton
                     status="Closed"
                     currentStatus={ticket.status}
-                    isAdmin={user?.role === 'admin'}
                     onClick={() => handleUpdateStatus('Closed')}
                   />
                 )}

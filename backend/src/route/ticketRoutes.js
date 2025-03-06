@@ -16,6 +16,6 @@ router
   .route('/:id')
   .get(protect, getTicketById)
   .delete(protect, admin, deleteTicket)
-  .put(protect, admin, updateTicket);
+  .put(protect, updateTicket);
 
 export { router as ticketRouter };

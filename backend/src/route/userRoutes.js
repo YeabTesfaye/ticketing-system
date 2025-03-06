@@ -16,10 +16,10 @@ const router = express.Router();
 
 router.post('/auth', authUser);
 router.post('/', createUser);
-// router.post('/', registerUser);
+router.post('/', registerUser);
 router.get('/', protect, admin, getAllUsers);
 router.delete('/:id', protect, admin, deleteUser);
-// router.post('/logout', logOutUSer);
+router.post('/logout', logOutUSer);
 router
   .route('/profile')
   .get(protect, getUserProfile)
