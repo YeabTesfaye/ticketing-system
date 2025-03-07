@@ -16,6 +16,7 @@ app.use(
   cors({
     origin: [
       'http://localhost:3000', // Local development
+      'https://ticketing-system-react-puce.vercel.app/',
     ],
     credentials: true,
   }),
