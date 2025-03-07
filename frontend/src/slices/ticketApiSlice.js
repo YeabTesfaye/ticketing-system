@@ -1,7 +1,7 @@
 import { apiSlices } from './apiSlice';
 
 const TICKETS_URL =
-  'https://ticketing-system-backend-5.onrender.com/api/tickets';
+  'https://ticketing-system-backend-6.onrender.com/api/tickets';
 
 const ticketApiSlice = apiSlices.injectEndpoints({
   endpoints: (builder) => ({

@@ -14,10 +14,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: [
-      'http://localhost:3000', // Local development
-      'https://ticketing-system-react-puce.vercel.app/',
-    ],
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        'http://localhost:3000', // Local development
+      ];
+
+      // Regex pattern for domains starting with 'https://ticketing-system-mern' and ending with '.vercel.app'
+      const regex = /^https:\/\/ticketing-system-mern.*\.vercel\.app$/;
+
+      if (!origin || allowedOrigins.includes(origin) || regex.test(origin)) {
+        callback(null, true); // Allow the request
+      } else {
+        callback(new Error('Not allowed by CORS')); // Block the request
+      }
+    },
     credentials: true,
   }),
 );
