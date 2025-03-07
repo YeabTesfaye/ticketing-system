@@ -19,8 +19,9 @@ app.use(
         'http://localhost:3000', // Local development
       ];
 
-      // Regex pattern for domains starting with 'https://ticketing-system-mern' and ending with '.vercel.app'
-      const regex = /^https:\/\/ticketing-system-mern.*\.vercel\.app$/;
+      // Regex to match URLs containing 'ticketing-system-frontend-mern' anywhere in the domain/subdomain
+      const regex =
+        /^https:\/\/.*ticketing-system-frontend-mern.*\.vercel\.app$/;
 
       if (!origin || allowedOrigins.includes(origin) || regex.test(origin)) {
         callback(null, true); // Allow the request
