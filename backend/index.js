@@ -13,11 +13,13 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
-  cors([
-    'http://localhost:3000', // Local development
-  ]),
+  cors({
+    origin: [
+      'http://localhost:3000', // Local development
+    ],
+    credentials: true,
+  }),
 );
-
 app.use('/api/users', UserRouter);
 app.use('/api/tickets', ticketRouter);
 app.use(notFound);
