@@ -45,6 +45,12 @@ JWT_SECRET=your_jwt_secret
 MONGO_URI=mongodb+srv://username:password@cluster0.mongodb.net/database_name
 ```
 
+### Frontend `.env` Example:
+
+```env
+VITE_APP_BACKEND_URL=http://localhost:5000
+```
+
 - **PORT**: The port for the backend server (default: 5000).
 - **JWT_SECRET**: A secret key for signing JWTs.
 - **MONGO_URI**: Your MongoDB connection string. You can use MongoDB Atlas or a local database.

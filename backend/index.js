@@ -13,24 +13,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
-  cors({
-    origin: (origin, callback) => {
-      const allowedOrigins = [
-        'http://localhost:3000', // Local development
-      ];
-
-      // Regex to match URLs containing 'ticketing-system-frontend-mern' anywhere in the domain/subdomain
-      const regex =
-        /^https:\/\/.*ticketing-system-frontend-mern.*\.vercel\.app$/;
-
-      if (!origin || allowedOrigins.includes(origin) || regex.test(origin)) {
-        callback(null, true); // Allow the request
-      } else {
-        callback(new Error('Not allowed by CORS')); // Block the request
-      }
-    },
-    credentials: true,
-  }),
+  cors([
+    'http://localhost:3000', // Local development
+  ]),
 );
 
 app.use('/api/users', UserRouter);
