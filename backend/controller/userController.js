@@ -19,17 +19,13 @@ export const authUser = asyncHandler(async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    const iMatch = user.matchPasswords(password);
-
     if (user && (await user.matchPasswords(password))) {
+      generateToken(res, user._id);
       res.status(200).json({
-        token: generateToken(user._id),
-        user: {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        },
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
       });
     } else {
       res.status(401);
@@ -66,13 +62,12 @@ export const registerUser = asyncHandler(async (req, res) => {
     });
 
     if (user) {
+      generateToken(res, user._id);
       res.status(201).json({
-        user: {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        },
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
       });
     } else {
       res.status(400);
@@ -90,7 +85,13 @@ export const registerUser = asyncHandler(async (req, res) => {
 // route POST /api/users/logout
 // @access Public
 export const logOutUSer = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: 'User logged out' });
+  res.cookie('jwt', '', {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+  res.status(200).json({
+    message: 'User loged Out',
+  });
 });
 
 // @desc get  user profile
@@ -117,13 +118,11 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
       user.password = req.body.password;
     }
     const updatedUser = await user.save();
+    generateToken(res, user._id);
     return res.status(200).json({
-      user: {
-        _id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-      },
-      token: generateToken(user._id),
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
     });
   } else {
     res.status(404);
@@ -137,7 +136,6 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
 export const createUser = asyncHandler(async (req, res) => {
   try {
     const validatedData = createUserSchema.parse(req.body);
-    console.log('Received Data:'.validatedData);
     const { name, email, password, role } = validatedData;
     const userExists = await User.findOne({ email });
 
@@ -198,5 +196,9 @@ export const deleteUser = asyncHandler(async (req, res) => {
   }
 
   await user.deleteOne();
+  res.cookie('jwt', '', {
+    httpOnly: true,
+    expires: new Date(0),
+  });
   res.json({ message: 'User removed' });
 });

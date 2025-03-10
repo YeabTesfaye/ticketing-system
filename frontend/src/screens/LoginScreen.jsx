@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import FormContainer from '../components/FormContainer';
 import { useLoginMutation } from '../slices/usersApiSlice';
-import { setCredentials } from '../slices/autSlice';
+import { setCredentials } from '../slices/authSlice';
 import { toast } from 'react-toastify';
 import Loader from '../components/Loader';
 import { useForm } from 'react-hook-form';
@@ -15,21 +15,22 @@ const LoginScreen = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { user, token } = useSelector((state) => state.auth); // Updated state
+  const { userInfo } = useSelector((state) => state.auth);
   const [login, { isLoading }] = useLoginMutation();
 
   useEffect(() => {
-    if (user && token) {
+    if (userInfo) {
       navigate('/'); // Redirect after login
     }
-  }, [user, token, navigate]); // Navigate only when both exist
+  }, [userInfo, navigate]); // Navigate only when both exist
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(loginSchema), // Integrating Zod for validation
+    resolver: zodResolver(loginSchema),
   });
 
   const submitHandler = async (data) => {
@@ -38,9 +39,12 @@ const LoginScreen = () => {
 
       // If validation passes, perform login
       const res = await login({ email, password }).unwrap();
-      dispatch(setCredentials(res)); // Dispatch user & token separately
+      dispatch(setCredentials({ ...res }));
+      console.log(res);
       navigate('/'); // Redirect after successful login
     } catch (err) {
+      reset({ email: '', password: '' });
+      console.log(err);
       toast.error(
         err?.data?.message || err?.error || 'Invalid email or password',
       );

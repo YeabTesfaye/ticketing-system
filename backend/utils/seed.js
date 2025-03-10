@@ -1,5 +1,5 @@
 // seed.js
-import { connectDB } from '../utils/db.js';
+import { connectDB } from './db.js';
 import User from '../models/User.js';
 import Ticket from '../models/Ticket.js';
 import dotenv from 'dotenv';

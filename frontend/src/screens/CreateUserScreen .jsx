@@ -11,10 +11,10 @@ import { useForm } from 'react-hook-form';
 
 const CreateUserScreen = () => {
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state) => state.auth);
 
   // If the user is not an admin, redirect
-  if (user?.role !== 'admin') {
+  if (userInfo?.role !== 'admin') {
     navigate('/');
   }
 

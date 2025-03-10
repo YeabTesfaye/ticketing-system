@@ -1,10 +1,10 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { UserRouter } from './src/route/userRoutes.js';
-import { connectDB } from './src/utils/db.js';
-import { errorHandler, notFound } from './src/middleware/errorMiddleware.js';
-import { ticketRouter } from './src/route/ticketRoutes.js';
-import cors from 'cors';
+import { UserRouter } from './route/userRoutes.js';
+import { connectDB } from './utils/db.js';
+import { errorHandler, notFound } from './middleware/errorMiddleware.js';
+import { ticketRouter } from './route/ticketRoutes.js';
+import cookieParser from 'cookie-parser';
 dotenv.config();
 connectDB();
 const PORT = process.env.PORT || 5000;
@@ -12,14 +12,7 @@ const PORT = process.env.PORT || 5000;
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: [
-      'http://localhost:3000', // Local development
-    ],
-    credentials: true,
-  }),
-);
+app.use(cookieParser());
 app.use('/api/users', UserRouter);
 app.use('/api/tickets', ticketRouter);
 app.use(notFound);

@@ -14,7 +14,8 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 const AdminUsersScreen = () => {
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state) => state.auth);
+  
 
   // Pagination model for DataGrid
   const [paginationModel, setPaginationModel] = useState({
@@ -34,7 +35,7 @@ const AdminUsersScreen = () => {
   const [deleteUser] = useDeleteUserMutation();
 
   // Redirect non-admins
-  if (user?.role !== 'admin') {
+  if (userInfo?.role !== 'admin') {
     navigate('/');
     return null;
   }

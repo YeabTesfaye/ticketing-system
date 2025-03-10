@@ -1,8 +1,7 @@
 import { apiSlices } from './apiSlice';
 
-const BASE_URL = import.meta.env.VITE_APP_BACKEND_URL + '/api/users';
+const BASE_URL = '/api/users';
 
-console.log('BASE_URL', BASE_URL);
 // Helper function to construct URLs
 const constructUrl = (endpoint, params = '') =>
   `${BASE_URL}${endpoint}${params}`;
@@ -14,7 +13,6 @@ export const usersApiSlice = apiSlices.injectEndpoints({
         url: constructUrl('/auth'),
         method: 'POST',
         body: data,
-        credentials: 'include',
       }),
     }),
 
@@ -23,7 +21,6 @@ export const usersApiSlice = apiSlices.injectEndpoints({
         url: constructUrl(''),
         method: 'POST',
         body: data,
-        credentials: 'include',
       }),
     }),
 
@@ -32,7 +29,6 @@ export const usersApiSlice = apiSlices.injectEndpoints({
         url: constructUrl('/profile'),
         method: 'PUT',
         body: data,
-        credentials: 'include',
       }),
     }),
 
@@ -40,7 +36,6 @@ export const usersApiSlice = apiSlices.injectEndpoints({
       query: () => ({
         url: constructUrl('/logout'),
         method: 'POST',
-        credentials: 'include',
       }),
     }),
 

@@ -9,25 +9,28 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLogoutMutation } from '../slices/usersApiSlice';
-import { logout } from '../slices/autSlice';
+import { logout } from '../slices/authSlice';
 import { toast } from 'react-toastify';
 
 const Header = () => {
-  const { user, token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const [logoutApiCall] = useLogoutMutation();
 
   const logoutHandler = async () => {
     try {
+      console.log('Logging out.....');
       await logoutApiCall().unwrap();
       dispatch(logout());
+      console.log('logout successfull!');
       navigate('/login');
     } catch (error) {
       toast.error(error?.data?.message || 'Logout failed');
     }
   };
 
+  const { userInfo } = useSelector((state) => state.auth);
   return (
     <header>
       <Navbar bg="dark" variant="dark" expand="lg" collapseOnSelect>
@@ -38,20 +41,20 @@ const Header = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
-              {user && token ? (
+              {userInfo ? (
                 <>
-                  <NavDropdown title={user.name} id="username">
+                  <NavDropdown title={userInfo.name} id="username">
                     <NavDropdown.Item as={Link} to="/profile">
                       <FaUser className="me-1" /> Profile
                     </NavDropdown.Item>
                     {/* Only show the "List Users" button if the user is an admin */}
-                    {user.role === 'admin' && (
+                    {userInfo.role === 'admin' && (
                       <NavDropdown.Item as={Link} to="/admin/users">
                         <FaUsers className="me-1" /> List Users
                       </NavDropdown.Item>
                     )}
                     {/* Only show the "Create User" link if the user is an admin */}
-                    {user.role === 'admin' && (
+                    {userInfo.role === 'admin' && (
                       <NavDropdown.Item as={Link} to="/create">
                         <FaUserPlus className="me-1" /> Create User
                       </NavDropdown.Item>

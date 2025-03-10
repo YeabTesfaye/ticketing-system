@@ -2,15 +2,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: '',
-  prepareHeaders: (headers) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`);
-    }
-    return headers;
-  },
 });
-
+//import.meta.env.VITE_APP_BACKEND_URL,
 export const apiSlices = createApi({
   baseQuery,
   tagTypes: ['User'],

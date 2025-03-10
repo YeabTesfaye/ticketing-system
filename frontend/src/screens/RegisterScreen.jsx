@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import FormContainer from '../components/FormContainer';
 import { useRegisterMutation } from '../slices/usersApiSlice';
-import { setCredentials } from '../slices/autSlice';
+import { setCredentials } from '../slices/authSlice';
 import { toast } from 'react-toastify';
 import Loader from '../components/Loader';
 import { useForm } from 'react-hook-form';
@@ -15,20 +15,20 @@ const RegisterScreen = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { user } = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state) => state.auth);
   const [register, { isLoading }] = useRegisterMutation();
 
   useEffect(() => {
-    if (user) {
+    if (userInfo) {
       navigate('/');
     }
-  }, [user, navigate]);
+  }, [userInfo, navigate]);
 
   useEffect(() => {
-    if (!isLoading && user) {
+    if (!isLoading && userInfo) {
       navigate('/login'); 
     }
-  }, [isLoading, user, navigate]);
+  }, [isLoading, userInfo, navigate]);
 
   const {
     register: formRegister,

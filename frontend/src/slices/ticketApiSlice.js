@@ -1,6 +1,6 @@
 import { apiSlices } from './apiSlice';
 
-const TICKETS_URL = import.meta.env.VITE_APP_BACKEND_URL + '/api/tickets';
+const TICKETS_URL = '/api/tickets';
 
 const ticketApiSlice = apiSlices.injectEndpoints({
   endpoints: (builder) => ({

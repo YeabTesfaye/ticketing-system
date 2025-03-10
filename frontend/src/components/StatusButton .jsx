@@ -2,9 +2,7 @@ import React from 'react';
 import { Button } from 'react-bootstrap';
 
 const StatusButton = ({ status, currentStatus, onClick }) => {
-  // if (!isAdmin) return null; // Don't show buttons if the user is not an admin
 
-  // Disable the button if the status is already set to the current one
   const isDisabled = currentStatus === status;
 
   return (

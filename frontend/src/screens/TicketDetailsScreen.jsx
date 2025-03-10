@@ -25,7 +25,7 @@ const TicketDetailsScreen = () => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // Get user info (assuming it is in the Redux state)
-  const { user } = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state) => state.auth);
 
   // Handle loading and error states
   if (isLoading) return <Loader />;
@@ -99,7 +99,7 @@ const TicketDetailsScreen = () => {
                   <Message variant="info">This ticket is closed</Message>
                 )}
 
-                {user?.role === 'admin' && (
+                {userInfo?.role === 'admin' && (
                   <Button
                     variant="danger"
                     onClick={() => setShowDeleteDialog(true)}

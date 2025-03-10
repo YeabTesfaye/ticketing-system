@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 const Hero = () => {
-  const { user } = useSelector((state) => state.auth); // Get user info from Redux store
+  const { userInfo } = useSelector((state) => state.auth)
 
   return (
     <div className="py-5">
@@ -16,7 +16,7 @@ const Hero = () => {
             resolve issues faster.
           </p>
 
-          {user ? (
+          {userInfo ? (
             // If the user is logged in, show their tickets and create new ticket button
             <>
               <div className="d-flex mb-4">

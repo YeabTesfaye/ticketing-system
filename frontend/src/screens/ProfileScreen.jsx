@@ -5,7 +5,7 @@ import FormContainer from '../components/FormContainer';
 import { toast } from 'react-toastify';
 import Loader from '../components/Loader';
 import { useUpdateUserMutation } from '../slices/usersApiSlice';
-import { setCredentials } from '../slices/autSlice';
+import { setCredentials } from '../slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,7 +15,7 @@ const ProfileScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { user } = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state) => state.auth);
   const [updateProfile, { isLoading }] = useUpdateUserMutation();
 
   const {
@@ -24,16 +24,16 @@ const ProfileScreen = () => {
     formState: { errors },
     setValue,
   } = useForm({
-    resolver: zodResolver(profileUpdateSchema), 
+    resolver: zodResolver(profileUpdateSchema),
   });
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
-    setValue('name', user.name);
-    setValue('email', user.email);
-  }, [user, setValue]);
+    setValue('name', userInfo.name);
+    setValue('email', userInfo.email);
+  }, [userInfo, setValue]);
 
   const submitHandler = async (data) => {
     const { name, email, password } = data;
@@ -43,7 +43,7 @@ const ProfileScreen = () => {
     } else {
       try {
         const res = await updateProfile({
-          _id: user._id,
+          _id: userInfo._id,
           name,
           email,
           password,
