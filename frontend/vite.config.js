@@ -8,7 +8,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'https://ticketing-system-server-3.onrender.com',
+        target: 'https://ticketing-system-server-4.onrender.com',
         changeOrigin: true,
       },
     },
