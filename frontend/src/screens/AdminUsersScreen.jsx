@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import {
   useGetUsersQuery,
   useDeleteUserMutation,
-} from '../slices/usersApiSlice';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
+} from '@/slices/usersApiSlice';
+import Loader from '@/components/Loader';
+import Message from '@/components/Message';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
-import { formatId } from '../utils';
+import { formatId } from '@/utils';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 const AdminUsersScreen = () => {

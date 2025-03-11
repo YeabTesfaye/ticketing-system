@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Container, Button } from 'react-bootstrap';
-import { useGetTicketsQuery } from '../slices/ticketApiSlice';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
+import { useGetTicketsQuery } from '@/slices/ticketApiSlice';
+import Loader from '@/components/Loader';
+import Message from '@/components/Message';
 import { useNavigate, Link } from 'react-router-dom';
-import { formatId } from '../utils';
+import { formatId } from '@/utils';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 const MyTicketsScreen = () => {

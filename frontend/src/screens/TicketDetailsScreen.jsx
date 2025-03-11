@@ -6,11 +6,11 @@ import {
   useGetTicketByIdQuery,
   useUpdateTicketStatusMutation,
   useDeleteTicketMutation,
-} from '../slices/ticketApiSlice';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
-import StatusButton from '../components/StatusButton ';
-import ConfirmationDialog from '../components/ConfirmationDialog';
+} from '@/slices/ticketApiSlice';
+import Loader from '@/components/Loader';
+import Message from '@/components/Message';
+import StatusButton from '@/components/StatusButton ';
+import ConfirmationDialog from '@/components/ConfirmationDialog';
 import { toast } from 'react-toastify';
 
 const TicketDetailsScreen = () => {

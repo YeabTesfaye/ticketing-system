@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import FormContainer from '../components/FormContainer';
+import FormContainer from '@/components/FormContainer';
 import { toast } from 'react-toastify';
-import Loader from '../components/Loader';
-import { useUpdateUserMutation } from '../slices/usersApiSlice';
-import { setCredentials } from '../slices/authSlice';
+import Loader from '@/components/Loader';
+import { useUpdateUserMutation } from '@/slices/usersApiSlice';
+import { setCredentials } from '@/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { profileUpdateSchema } from '../utils/validator';
+import { profileUpdateSchema } from '@/utils/validator';
 
 const ProfileScreen = () => {
   const dispatch = useDispatch();
