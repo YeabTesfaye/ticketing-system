@@ -9,15 +9,14 @@ const ticketApiSlice = apiSlices.injectEndpoints({
         url: TICKETS_URL,
         method: 'POST',
         body: data,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       }),
     }),
     getTickets: builder.query({
       query: ({ page, limit }) => ({
         url: TICKETS_URL,
         params: { page, limit },
+        credentials: 'include',
       }),
       providesTags: ['Tickets'],
     }),
@@ -25,9 +24,7 @@ const ticketApiSlice = apiSlices.injectEndpoints({
       query: (id) => ({
         url: `${TICKETS_URL}/${id}`,
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       }),
     }),
     updateTicketStatus: builder.mutation({
@@ -35,18 +32,14 @@ const ticketApiSlice = apiSlices.injectEndpoints({
         url: `${TICKETS_URL}/${id}`,
         method: 'PUT',
         body: { status },
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       }),
     }),
     deleteTicket: builder.mutation({
       query: (id) => ({
         url: `${TICKETS_URL}/${id}`,
         method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
+        credentials: 'include',
       }),
     }),
   }),
