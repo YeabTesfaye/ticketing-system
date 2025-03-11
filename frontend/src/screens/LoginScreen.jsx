@@ -40,7 +40,6 @@ const LoginScreen = () => {
       // If validation passes, perform login
       const res = await login({ email, password }).unwrap();
       dispatch(setCredentials({ ...res }));
-      console.log(res);
       navigate('/'); // Redirect after successful login
     } catch (err) {
       reset({ email: '', password: '' });
