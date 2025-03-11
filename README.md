@@ -48,7 +48,7 @@ MONGO_URI=mongodb+srv://username:password@cluster0.mongodb.net/database_name
 ### Frontend `.env` Example:
 
 ```env
-VITE_APP_BACKEND_URL=http://localhost:5000
+VITE_APP_BACKEND_URL=https://ticketing-system-server-12.onrender.com
 ```
 
 - **PORT**: The port for the backend server (default: 5000).
@@ -74,20 +74,17 @@ npm run dev
 - The **backend** will run on `http://localhost:5000`.
 - The **frontend** will run on `http://localhost:3000`.
 
-### 🔑6 Admin Login  
+### 🔑6 Admin Login
 
-To access admin features, log in using the credentials below after seeding the database.  
-
-### 🔑6 Admin Login  
-
-To access admin features, log in using the credentials below after seeding the database.  
+To access admin features, log in using the credentials below after seeding the database.
 
 ```json
 {
   "email": "admin@example.com",
   "password": "password123"
 }
-```  
+```
+
 Once logged in, you'll have access to all admin functionalities. 🚀
 
 ## 🎉 Thank You for Trying This Project!

@@ -12,12 +12,12 @@ const seedData = async () => {
     await Ticket.deleteMany({});
 
     // Create admin user
-    const adminUser = await User.create({
-      name: 'Admin User',
-      email: 'admin@example.com',
-      password: 'password123',
-      role: 'admin',
-    });
+    // const adminUser = await User.create({
+    //   name: 'Admin User',
+    //   email: 'admin@example.com',
+    //   password: 'password123',
+    //   role: 'admin',
+    // });
 
     // Create 19 regular user
     const users = [];
