@@ -12,19 +12,19 @@ connectDB();
 const PORT = process.env.PORT || 5000;
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-
 app.use(
   cors({
     origin: [
       'http://localhost:3000',
-      'https://ticketing-system-frontend-static-2.vercel.app',
+      'https://ticketing-system-frontend-static-3.vercel.app',
     ],
     credentials: true,
   }),
 );
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use('/api/users', UserRouter);
 app.use('/api/tickets', ticketRouter);
