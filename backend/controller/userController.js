@@ -48,6 +48,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     const validatedData = registerSchema.parse(req.body);
     const { email, name, password } = validatedData;
 
+
     const userExist = await User.findOne({ email });
 
     if (userExist) {

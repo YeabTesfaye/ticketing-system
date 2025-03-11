@@ -41,7 +41,7 @@ export const usersApiSlice = apiSlices.injectEndpoints({
 
     createUser: builder.mutation({
       query: (data) => ({
-        url: constructUrl(''),
+        url: constructUrl('/create'),
         method: 'POST',
         body: data,
       }),

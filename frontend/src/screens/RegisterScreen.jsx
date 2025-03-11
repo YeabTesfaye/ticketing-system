@@ -26,7 +26,7 @@ const RegisterScreen = () => {
 
   useEffect(() => {
     if (!isLoading && userInfo) {
-      navigate('/login'); 
+      navigate('/login');
     }
   }, [isLoading, userInfo, navigate]);
 
@@ -34,19 +34,23 @@ const RegisterScreen = () => {
     register: formRegister,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
-    resolver: zodResolver(registerSchema), 
+    resolver: zodResolver(registerSchema),
   });
 
   const submitHandler = async (data) => {
     try {
       const { name, email, password } = data;
 
+
       // If validation passes, proceed with registration
       const res = await register({ name, email, password }).unwrap();
       dispatch(setCredentials(res));
       navigate('/login');
     } catch (err) {
+      console.log(err);
+      reset({ name: '', email: '', password: '', confirmPassword: '' });
       toast.error(err?.data?.message || err?.error || 'Registration failed');
     }
   };
