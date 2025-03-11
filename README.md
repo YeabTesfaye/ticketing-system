@@ -74,9 +74,21 @@ npm run dev
 - The **backend** will run on `http://localhost:5000`.
 - The **frontend** will run on `http://localhost:3000`.
 
-### 6️⃣ Admin Login
+### 🔑6 Admin Login  
 
-To explore the admin features, log in with the provided admin credentials after seeding the database.
+To access admin features, log in using the credentials below after seeding the database.  
+
+### 🔑6 Admin Login  
+
+To access admin features, log in using the credentials below after seeding the database.  
+
+```json
+{
+  "email": "admin@example.com",
+  "password": "password123"
+}
+```  
+Once logged in, you'll have access to all admin functionalities. 🚀
 
 ## 🎉 Thank You for Trying This Project!
 
