@@ -9,14 +9,14 @@ const ticketApiSlice = apiSlices.injectEndpoints({
         url: TICKETS_URL,
         method: 'POST',
         body: data,
-        credentials: 'include',
+        credentials: 'include', // ✅ Ensures cookies are sent
       }),
     }),
     getTickets: builder.query({
       query: ({ page, limit }) => ({
         url: TICKETS_URL,
         params: { page, limit },
-        credentials: 'include',
+        credentials: 'include', // ✅ Ensures cookies are sent
       }),
       providesTags: ['Tickets'],
     }),
@@ -24,7 +24,7 @@ const ticketApiSlice = apiSlices.injectEndpoints({
       query: (id) => ({
         url: `${TICKETS_URL}/${id}`,
         method: 'GET',
-        credentials: 'include',
+        credentials: 'include', // ✅ Ensures cookies are sent
       }),
     }),
     updateTicketStatus: builder.mutation({
@@ -32,14 +32,14 @@ const ticketApiSlice = apiSlices.injectEndpoints({
         url: `${TICKETS_URL}/${id}`,
         method: 'PUT',
         body: { status },
-        credentials: 'include',
+        credentials: 'include', // ✅ Ensures cookies are sent
       }),
     }),
     deleteTicket: builder.mutation({
       query: (id) => ({
         url: `${TICKETS_URL}/${id}`,
         method: 'DELETE',
-        credentials: 'include',
+        credentials: 'include', // ✅ Ensures cookies are sent
       }),
     }),
   }),

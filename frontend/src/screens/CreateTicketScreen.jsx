@@ -1,13 +1,13 @@
 import { useCallback } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { useCreateTicketMutation } from '@/slices/ticketApiSlice';
-import FormContainer from '@/components/FormContainer';
-import Loader from '@/components/Loader';
+import { useCreateTicketMutation } from '../slices/ticketApiSlice';
+import FormContainer from '../components/FormContainer';
+import Loader from '../components/Loader';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createTicketSchema } from '@/utils/validator';
+import { createTicketSchema } from '../utils/validator';
 
 const CreateTicketScreen = () => {
   const navigate = useNavigate();

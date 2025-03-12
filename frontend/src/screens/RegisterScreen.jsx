@@ -2,14 +2,14 @@ import { useEffect } from 'react';
 import { Form, Button, Row, Col } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import FormContainer from '@/components/FormContainer';
-import { useRegisterMutation } from '@/slices/usersApiSlice';
-import { setCredentials } from '@/slices/authSlice';
+import FormContainer from '../components/FormContainer';
+import { useRegisterMutation } from '../slices/usersApiSlice';
+import { setCredentials } from '../slices/authSlice';
 import { toast } from 'react-toastify';
-import Loader from '@/components/Loader';
+import Loader from '../components/Loader';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { registerSchema } from '@/utils/validator';
+import { registerSchema } from '../utils/validator';
 
 const RegisterScreen = () => {
   const navigate = useNavigate();

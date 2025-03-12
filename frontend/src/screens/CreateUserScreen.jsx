@@ -1,11 +1,11 @@
 import { Form, Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useCreateUserMutation } from '@/slices/usersApiSlice';
-import FormContainer from '@/components/FormContainer';
+import { useCreateUserMutation } from '../slices/usersApiSlice';
+import FormContainer from '../components/FormContainer';
 import { toast } from 'react-toastify';
-import Loader from '@/components/Loader';
-import { createUserSchema } from '@/utils/validator';
+import Loader from '../components/Loader';
+import { createUserSchema } from '../utils/validator';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 

@@ -3,9 +3,8 @@ import asyncHandler from 'express-async-handler';
 import User from '../models/User.js';
 
 export const protect = asyncHandler(async (req, res, next) => {
-  let token;
+  let token = req.cookies.jwt;
 
-  token = req.cookies.jwt;
 
   if (token) {
     try {

@@ -6,11 +6,11 @@ import {
   useGetTicketByIdQuery,
   useUpdateTicketStatusMutation,
   useDeleteTicketMutation,
-} from '@/slices/ticketApiSlice';
-import Loader from '@/components/Loader';
-import Message from '@/components/Message';
-import StatusButton from '@/components/StatusButton ';
-import ConfirmationDialog from '@/components/ConfirmationDialog';
+} from '../slices/ticketApiSlice';
+import Loader from '../components/Loader';
+import Message from '../components/Message';
+import StatusButton from '../components/StatusButton ';
+import ConfirmationDialog from '../components/ConfirmationDialog';
 import { toast } from 'react-toastify';
 
 const TicketDetailsScreen = () => {
@@ -72,28 +72,32 @@ const TicketDetailsScreen = () => {
               <h5>Actions</h5>
               <div className="d-flex flex-wrap">
                 {/* Render the status update buttons based on the current status */}
-                {ticket.status === 'Open' && (
+                {userInfo?.role === 'admin' && ticket.status === 'Open' && (
                   <>
                     <StatusButton
                       status="In Progress"
                       currentStatus={ticket.status}
                       onClick={() => handleUpdateStatus('In Progress')}
+                      isAdmin={userInfo.role === 'admin'}
                     />
                     <StatusButton
                       status="Closed"
                       currentStatus={ticket.status}
                       onClick={() => handleUpdateStatus('Closed')}
+                      isAdmin={userInfo.role === 'admin'}
                     />
                   </>
                 )}
 
-                {ticket.status === 'In Progress' && (
-                  <StatusButton
-                    status="Closed"
-                    currentStatus={ticket.status}
-                    onClick={() => handleUpdateStatus('Closed')}
-                  />
-                )}
+                {userInfo?.role === 'admin' &&
+                  ticket.status === 'In Progress' && (
+                    <StatusButton
+                      status="Closed"
+                      currentStatus={ticket.status}
+                      onClick={() => handleUpdateStatus('Closed')}
+                      isAdmin={userInfo?.role === 'admin'}
+                    />
+                  )}
 
                 {ticket.status === 'Closed' && (
                   <Message variant="info">This ticket is closed</Message>

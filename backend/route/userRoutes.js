@@ -15,7 +15,7 @@ import { admin, protect } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 router.post('/auth', authUser);
-router.post('/create', createUser);
+router.post('/create', protect, admin, createUser);
 router.post('/', registerUser);
 router.get('/', protect, admin, getAllUsers);
 router.delete('/:id', protect, admin, deleteUser);

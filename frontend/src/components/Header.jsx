@@ -8,8 +8,8 @@ import {
 } from 'react-icons/fa'; // Import FaUsers for listing users
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { useLogoutMutation } from '@/slices/usersApiSlice';
-import { logout } from '@/slices/authSlice';
+import { useLogoutMutation } from '../slices/usersApiSlice';
+import { logout } from '../slices/authSlice';
 import { toast } from 'react-toastify';
 
 const Header = () => {
@@ -20,10 +20,8 @@ const Header = () => {
 
   const logoutHandler = async () => {
     try {
-      console.log('Logging out.....');
       await logoutApiCall().unwrap();
       dispatch(logout());
-      console.log('logout successfull!');
       navigate('/login');
     } catch (error) {
       toast.error(error?.data?.message || 'Logout failed');

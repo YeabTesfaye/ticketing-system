@@ -15,7 +15,7 @@ import PrivateRoute from './components/PrivateRoute.jsx';
 import CreateTicketScreen from './screens/CreateTicketScreen.jsx';
 import MyTicketsScreen from './screens/MyTicketsScreen.jsx';
 import TicketDetailsScreen from './screens/TicketDetailsScreen.jsx';
-import CreateUserScreen from './screens/CreateUserScreen .jsx';
+import CreateUserScreen from './screens/CreateUserScreen.jsx';
 import AdminUsersScreen from './screens/AdminUsersScreen.jsx';
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>

@@ -1,10 +1,8 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 
-const StatusButton = ({ status, currentStatus, onClick }) => {
-
-  const isDisabled = currentStatus === status;
-
+const StatusButton = ({ status, currentStatus, onClick, isAdmin }) => {
+  const isDisabled = currentStatus === status || !isAdmin; // Disable if status is the same or user is not admin
   return (
     <Button
       variant={status === 'In Progress' ? 'warning' : 'success'}

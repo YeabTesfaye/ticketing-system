@@ -34,11 +34,14 @@ export const getTickets = asyncHandler(async (req, res) => {
   const limit = Number(req.query.limit) || 10;
   const skip = (page - 1) * limit;
 
+  let filter = {};
 
-  const totalTickets = await Ticket.countDocuments({ user: req.user._id });
-  const tickets = await Ticket.find({ user: req.user._id })
-    .skip(skip)
-    .limit(limit);
+  // If the user is NOT an admin, only fetch their own tickets
+  if (req.user.role === 'user') {
+    filter.user = req.user._id;
+  }
+  const totalTickets = await Ticket.countDocuments(filter);
+  const tickets = await Ticket.find(filter).skip(skip).limit(limit);
 
   res.json({
     tickets,
