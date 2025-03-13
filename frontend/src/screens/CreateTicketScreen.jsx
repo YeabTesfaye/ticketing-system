@@ -30,7 +30,7 @@ const CreateTicketScreen = () => {
           status: 'open',
         }).unwrap();
         toast.success('Ticket created successfully');
-        navigate('/'); // Redirect to ticket list
+        navigate('/'); 
       } catch (error) {
         toast.error(
           error?.data?.message ||

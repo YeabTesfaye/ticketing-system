@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Card, Row, Col, Button } from 'react-bootstrap';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux'; // Assuming user role is stored here
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import {
   useGetTicketByIdQuery,
   useUpdateTicketStatusMutation,
@@ -9,22 +9,32 @@ import {
 } from '../slices/ticketApiSlice';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import StatusButton from '../components/StatusButton ';
+import StatusButton from '../components/StatusButton';
 import ConfirmationDialog from '../components/ConfirmationDialog';
 import { toast } from 'react-toastify';
 
 const TicketDetailsScreen = () => {
-  const { id } = useParams();
+  const { selectedTicketId } = useSelector((state) => state.ticket);
+
   const navigate = useNavigate();
 
-  // Fetch the ticket details
+  useEffect(() => {
+    if (!selectedTicketId) {
+      navigate('/tickets');
+    }
+  }, [selectedTicketId, navigate]);
+
+  const id = selectedTicketId;
+
+  // Fetch ticket details using token
   const { data: ticket, isLoading, error } = useGetTicketByIdQuery(id);
+
   const [updateTicket] = useUpdateTicketStatusMutation();
   const [deleteTicket] = useDeleteTicketMutation();
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  // Get user info (assuming it is in the Redux state)
+  // Get user info (assuming it is stored in Redux)
   const { userInfo } = useSelector((state) => state.auth);
 
   // Handle loading and error states
@@ -36,7 +46,7 @@ const TicketDetailsScreen = () => {
   const handleUpdateStatus = async (status) => {
     try {
       await updateTicket({ id, status }).unwrap();
-      // Refresh the page after status update
+      toast.success('Ticket status updated successfully');
       window.location.reload();
     } catch (err) {
       toast.error(err?.data?.message || 'Failed to update ticket status');
@@ -46,6 +56,7 @@ const TicketDetailsScreen = () => {
   const handleDeleteTicket = async () => {
     try {
       await deleteTicket(id).unwrap();
+      toast.success('Ticket deleted successfully');
       navigate('/tickets');
     } catch (err) {
       toast.error(err?.data?.message || 'Failed to delete the ticket');
@@ -124,6 +135,7 @@ const TicketDetailsScreen = () => {
           </Row>
         </Card>
       )}
+
       <ConfirmationDialog
         show={showDeleteDialog}
         onHide={() => setShowDeleteDialog(false)}

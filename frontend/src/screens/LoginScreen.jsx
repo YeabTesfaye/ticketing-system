@@ -59,8 +59,8 @@ const LoginScreen = () => {
           <Form.Control
             type="email"
             placeholder="Enter Email"
-            {...register('email')} // Register input with react-hook-form
-            isInvalid={!!errors.email} // Show error if validation fails
+            {...register('email')} 
+            isInvalid={!!errors.email} 
           />
           {errors.email && (
             <div className="invalid-feedback">{errors.email.message}</div>
@@ -72,8 +72,8 @@ const LoginScreen = () => {
           <Form.Control
             type="password"
             placeholder="Enter Password"
-            {...register('password')} // Register input with react-hook-form
-            isInvalid={!!errors.password} // Show error if validation fails
+            {...register('password')} 
+            isInvalid={!!errors.password} 
           />
           {errors.password && (
             <div className="invalid-feedback">{errors.password.message}</div>

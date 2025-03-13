@@ -6,9 +6,12 @@ import Message from '../components/Message';
 import { useNavigate, Link } from 'react-router-dom';
 import { formatId } from '../utils';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { useDispatch } from 'react-redux';
+import { setSelectedTicket } from '../slices/ticketSlice';
 
 const MyTicketsScreen = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
@@ -23,6 +26,11 @@ const MyTicketsScreen = () => {
   const { data, isLoading, error } = useGetTicketsQuery(queryParams, {
     refetchOnMountOrArgChange: true,
   });
+
+  const handleTicketClick = (ticketId) => {
+    dispatch(setSelectedTicket(ticketId));
+    navigate('/ticket-details');
+  };
 
   const columns = [
     {
@@ -42,7 +50,7 @@ const MyTicketsScreen = () => {
         <Button
           variant="primary"
           size="sm"
-          onClick={() => navigate(`/ticket/${params.row?._id}`)}
+          onClick={() => handleTicketClick(params.row._id)}
         >
           View Details
         </Button>
@@ -54,6 +62,7 @@ const MyTicketsScreen = () => {
   if (error) return <Message variant="danger">Error loading tickets!</Message>;
 
   const rows = (data?.tickets || []).map((ticket) => ({
+    token: ticket.token,
     _id: ticket._id,
     id: ticket._id,
     title: ticket.title,

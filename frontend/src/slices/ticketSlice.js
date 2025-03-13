@@ -1,26 +1,26 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
-  tickets: [],
-};
+// const initialState = {
+//   tickets: [],
+//   selectedTicketId: null,
+// };
 
+const initialState = {
+  selectedTicketId: localStorage.getItem('selectedTicketId')
+    ? JSON.parse(localStorage.getItem('selectedTicketId'))
+    : null,
+};
 const ticketSlice = createSlice({
   name: 'ticket',
   initialState,
   reducers: {
-    setTicket: (state, action) => {
-      state.tickets = action.payload;
-    },
-    addTicket: (state, action) => {
-      state.tickets.push(action.payload);
-    },
-    updateTicket: (state, action) => {
-      const { id, status } = action.payload;
-      const ticket = state.tickets.find((ticket) => ticket._id === id);
-      if (ticket) ticket.status = status;
+    setSelectedTicket: (state, action) => {
+      state.selectedTicketId = action.payload;
+      localStorage.setItem('selectedTicketId', JSON.stringify(action.payload));
     },
   },
 });
 
-export const { setTickets, addTicket, updateTicket } = ticketSlice.actions;
+export const { setTickets, addTicket, updateTicket, setSelectedTicket } =
+  ticketSlice.actions;
 export default ticketSlice.reducer;

@@ -30,7 +30,7 @@ createRoot(document.getElementById('root')).render(
               <Route path="/profile" element={<ProfileScreen />} />
               <Route path="/ticket" element={<CreateTicketScreen />} />
               <Route path="/tickets" element={<MyTicketsScreen />} />
-              <Route path="/ticket/:id" element={<TicketDetailsScreen />} />
+              <Route path="/ticket-details" element={<TicketDetailsScreen />} />
               <Route path="/create" element={<CreateUserScreen />} />
               <Route path="/admin/users" element={<AdminUsersScreen />} />
             </Route>

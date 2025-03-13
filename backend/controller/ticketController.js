@@ -80,7 +80,7 @@ export const updateTicket = asyncHandler(async (req, res) => {
 // @desc Get a specific ticket by ID
 // @route GET /api/tickets/:id
 // @access Private
-export const getTicketByToken = asyncHandler(async (req, res) => {
+export const getTicketById = asyncHandler(async (req, res) => {
   try {
     const ticket = await Ticket.findById(req.params.id).populate(
       'user',

@@ -1,19 +1,19 @@
-import React from 'react';
-import { Spinner } from 'react-bootstrap';
+import loadder from '/loader.gif';
 
-const Loader = () => {
+const Loading = () => {
   return (
-    <Spinner
-      animation="border"
-      role="status"
+    <div
       style={{
-        width: '100px',
-        height: '100px',
-        margin: 'auto',
-        display: 'block',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        // height: '20vh',
+        // width: '20vw',
       }}
-    ></Spinner>
+    >
+      <img src={loadder} alt="Loading" width={150} height={150} />
+    </div>
   );
 };
 
-export default Loader;
+export default Loading;
