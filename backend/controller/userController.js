@@ -1,12 +1,17 @@
 import asyncHandler from 'express-async-handler';
 import User from '../models/User.js';
-import { generateToken } from '../utils/generateToken.js';
+import {
+  generateSecurePassword,
+  generateToken,
+} from '../utils/generateToken.js';
 import { ZodError } from 'zod';
 import {
   registerSchema,
   loginSchema,
   createUserSchema,
 } from '../utils/validator.js';
+import bcrypt from 'bcryptjs';
+import { sendEmail } from '../utils/mailer.js';
 // @desc Auth user/set token
 // route POST /api/users/auth
 // @access Public
@@ -20,6 +25,7 @@ export const authUser = asyncHandler(async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPasswords(password))) {
+      user.isPasswordChanged = true;
       generateToken(res, user._id);
       res.status(200).json({
         _id: user._id,
@@ -48,7 +54,6 @@ export const registerUser = asyncHandler(async (req, res) => {
     const validatedData = registerSchema.parse(req.body);
     const { email, name, password } = validatedData;
 
-
     const userExist = await User.findOne({ email });
 
     if (userExist) {
@@ -60,6 +65,7 @@ export const registerUser = asyncHandler(async (req, res) => {
       name,
       email,
       password,
+      isPasswordChanged: true,
     });
 
     if (user) {
@@ -137,7 +143,7 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
 export const createUser = asyncHandler(async (req, res) => {
   try {
     const validatedData = createUserSchema.parse(req.body);
-    const { name, email, password, role } = validatedData;
+    const { name, email, role } = validatedData;
     const userExists = await User.findOne({ email });
 
     if (userExists) {
@@ -145,13 +151,16 @@ export const createUser = asyncHandler(async (req, res) => {
       throw new Error('User already exists');
     }
 
+    const password = generateSecurePassword();
+    const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
       name,
       email,
-      password,
       role,
+      isPasswordChanged: false,
+      password: hashedPassword,
     });
-
+    await sendEmail(email, name, password);
     if (user) {
       res.status(201).json({
         _id: user._id,
@@ -197,9 +206,5 @@ export const deleteUser = asyncHandler(async (req, res) => {
   }
 
   await user.deleteOne();
-  res.cookie('jwt', '', {
-    httpOnly: true,
-    expires: new Date(0),
-  });
   res.json({ message: 'User removed' });
 });

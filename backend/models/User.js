@@ -16,6 +16,11 @@ const userSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    isPasswordChanged: {
+      type: String,
+      required: true,
+      default: false,
+    },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
   },
   { timestamps: true },

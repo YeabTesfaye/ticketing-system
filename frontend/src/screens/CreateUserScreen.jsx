@@ -8,19 +8,20 @@ import Loader from '../components/Loader';
 import { createUserSchema } from '../utils/validator';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
 
 const CreateUserScreen = () => {
   const navigate = useNavigate();
   const { userInfo } = useSelector((state) => state.auth);
 
-  // If the user is not an admin, redirect
-  if (userInfo?.role !== 'admin') {
-    navigate('/');
-  }
+  useEffect(() => {
+    if (userInfo?.role !== 'admin') {
+      navigate('/');
+    }
+  }, [userInfo, navigate]);
 
   const [createUser, { isLoading }] = useCreateUserMutation();
 
-  // React Hook Form for validation
   const {
     register,
     handleSubmit,
@@ -28,17 +29,23 @@ const CreateUserScreen = () => {
     reset,
   } = useForm({
     resolver: zodResolver(createUserSchema),
+    defaultValues: {
+      role: 'user',
+    },
   });
 
-  // Submit Handler
+  // Submit handler
   const onSubmit = async (data) => {
+    console.log('Form submitted with data:', data); 
+
     try {
-      console.log(data);
       await createUser(data).unwrap();
       toast.success('User created successfully');
       navigate('/admin/users');
-      reset(); // Reset form after success
+      reset(); 
     } catch (error) {
+      console.log(error);
+      reset(); 
       toast.error(error?.data?.message || 'Error creating user');
     }
   };
@@ -67,18 +74,6 @@ const CreateUserScreen = () => {
           />
           {errors.email && (
             <p className="text-danger">{errors.email.message}</p>
-          )}
-        </Form.Group>
-
-        <Form.Group className="my-2" controlId="password">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="Enter password"
-            {...register('password')}
-          />
-          {errors.password && (
-            <p className="text-danger">{errors.password.message}</p>
           )}
         </Form.Group>
 
