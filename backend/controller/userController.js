@@ -10,7 +10,6 @@ import {
   loginSchema,
   createUserSchema,
 } from '../utils/validator.js';
-import bcrypt from 'bcryptjs';
 import { sendEmail } from '../utils/mailer.js';
 // @desc Auth user/set token
 // route POST /api/users/auth
@@ -24,24 +23,38 @@ export const authUser = asyncHandler(async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    if (user && (await user.matchPasswords(password))) {
-      user.isPasswordChanged = true;
-      generateToken(res, user._id);
-      res.status(200).json({
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password',
+      });
+    }
+    const isMatch = await user.matchPasswords(password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password',
+      });
+    }
+
+    generateToken(res, user._id);
+
+    return res.status(200).json({
+      success: true,
+      user: {
         _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
-      });
-    } else {
-      res.status(401);
-      throw new Error('Invalid email or password');
-    }
+      },
+      message: 'Loged in successfully',
+    });
   } catch (error) {
     if (error instanceof ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ success: false, errors: error.errors });
     }
-    throw error;
+    return res.status(500).json({ success: false, message: 'Server Error' });
   }
 });
 
@@ -57,34 +70,42 @@ export const registerUser = asyncHandler(async (req, res) => {
     const userExist = await User.findOne({ email });
 
     if (userExist) {
-      res.status(400);
-      throw new Error('User Already Exists');
+      return res.status(400).json({
+        success: false,
+        message: 'User already exists',
+      });
     }
 
     const user = await User.create({
       name,
       email,
       password,
-      isPasswordChanged: true,
     });
 
-    if (user) {
-      generateToken(res, user._id);
-      res.status(201).json({
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user data',
+      });
+    }
+
+    generateToken(res, user._id);
+
+    return res.status(201).json({
+      success: true,
+      user: {
         _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
-      });
-    } else {
-      res.status(400);
-      throw new Error('Invalid User Data');
-    }
+      },
+      message: 'User Created successfully',
+    });
   } catch (error) {
     if (error instanceof ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ success: false, errors: error.errors });
     }
-    throw error;
+    return res.status(500).json({ success: false, message: 'Server Error' });
   }
 });
 
@@ -96,8 +117,10 @@ export const logOutUSer = asyncHandler(async (req, res) => {
     httpOnly: true,
     expires: new Date(0),
   });
-  res.status(200).json({
-    message: 'User loged Out',
+
+  return res.status(200).json({
+    success: true,
+    message: 'User logged out successfully',
   });
 });
 
@@ -105,12 +128,21 @@ export const logOutUSer = asyncHandler(async (req, res) => {
 // route GET /api/users/profile
 // @access private
 export const getUserProfile = asyncHandler(async (req, res) => {
-  const user = {
-    _id: req.user._id,
-    name: req.user.name,
-    email: req.user.email,
-  };
-  res.status(200).json(user);
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      message: 'User not authenticated',
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    user: {
+      _id: req.user._id,
+      name: req.user.name,
+      email: req.user.email,
+    },
+  });
 });
 
 // @desc Auth user/set token
@@ -118,23 +150,31 @@ export const getUserProfile = asyncHandler(async (req, res) => {
 // @access private
 export const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
-  if (user) {
-    user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email;
-    if (req.body.password) {
-      user.password = req.body.password;
-    }
-    const updatedUser = await user.save();
-    generateToken(res, user._id);
-    return res.status(200).json({
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: 'User not found',
+    });
+  }
+
+  user.name = req.body.name || user.name;
+  user.email = req.body.email || user.email;
+  if (req.body.password) {
+    user.password = req.body.password;
+  }
+
+  const updatedUser = await user.save();
+  generateToken(res, updatedUser._id);
+
+  return res.status(200).json({
+    success: true,
+    user: {
       _id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,
-    });
-  } else {
-    res.status(404);
-    throw new Error('User not Found');
-  }
+    },
+  });
 });
 
 // @desc Create a new user
@@ -147,33 +187,44 @@ export const createUser = asyncHandler(async (req, res) => {
     const userExists = await User.findOne({ email });
 
     if (userExists) {
-      res.status(400);
-      throw new Error('User already exists');
+      return res.status(400).json({
+        success: false,
+        message: 'User already exists',
+      });
     }
 
     const password = generateSecurePassword();
-    const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
       name,
       email,
       role,
-      isPasswordChanged: false,
-      password: hashedPassword,
+      password,
     });
+
     await sendEmail(email, name, password);
-    if (user) {
-      res.status(201).json({
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user data',
+      });
+    }
+
+    return res.status(201).json({
+      success: true,
+      user: {
         _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
-      });
-    } else {
-      res.status(400);
-      throw new Error('Invalid user data');
-    }
+      },
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Server Error', error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: 'Server Error',
+      error: error.message,
+    });
   }
 });
 
@@ -184,9 +235,12 @@ export const getAllUsers = asyncHandler(async (req, res) => {
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 10;
   const skip = (page - 1) * limit;
+
   const totalUsers = await User.countDocuments();
   const users = await User.find().skip(skip).limit(limit);
-  res.json({
+
+  return res.status(200).json({
+    success: true,
     users,
     totalUsers,
     totalPages: Math.ceil(totalUsers / limit),
@@ -201,10 +255,16 @@ export const deleteUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
 
   if (!user) {
-    res.status(404);
-    throw new Error('User not found');
+    return res.status(404).json({
+      success: false,
+      message: 'User not found',
+    });
   }
 
   await user.deleteOne();
-  res.json({ message: 'User removed' });
+
+  return res.status(200).json({
+    success: true,
+    message: 'User removed successfully',
+  });
 });

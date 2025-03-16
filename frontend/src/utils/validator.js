@@ -29,9 +29,6 @@ export const createUserSchema = z.object({
     .string()
     .min(2, { message: 'Name must be at least 3 characters long' }),
   email: z.string().email({ message: 'Invalid email format' }),
-  password: z
-    .string()
-    .min(6, { message: 'Password must be at least 6 characters long' }),
   role: z.enum(['admin', 'user']).default('user'),
 });
 

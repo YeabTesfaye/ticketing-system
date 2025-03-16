@@ -16,6 +16,7 @@ const CreateUserScreen = () => {
 
   useEffect(() => {
     if (userInfo?.role !== 'admin') {
+      console.log('Unauthorized user, redirecting...');
       navigate('/');
     }
   }, [userInfo, navigate]);
@@ -29,24 +30,23 @@ const CreateUserScreen = () => {
     reset,
   } = useForm({
     resolver: zodResolver(createUserSchema),
-    defaultValues: {
-      role: 'user',
-    },
   });
 
   // Submit handler
-  const onSubmit = async (data) => {
-    console.log('Form submitted with data:', data); 
+  const submitHandler = async (data) => {
 
     try {
-      await createUser(data).unwrap();
+      const response = await createUser(data);
+      if (response.error) {
+        throw response.error;
+      }
       toast.success('User created successfully');
       navigate('/admin/users');
-      reset(); 
+      reset();
     } catch (error) {
-      console.log(error);
-      reset(); 
+      console.error('Error creating user:', error);
       toast.error(error?.data?.message || 'Error creating user');
+      reset();
     }
   };
 
@@ -54,27 +54,21 @@ const CreateUserScreen = () => {
     <FormContainer>
       <h1>Create User</h1>
 
-      <Form onSubmit={handleSubmit(onSubmit)}>
+      <Form
+        onSubmit={(e) => {
+          handleSubmit(submitHandler)(e);
+        }}
+      >
         <Form.Group className="my-2" controlId="name">
           <Form.Label>Name</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter name"
-            {...register('name')}
-          />
+          <Form.Control type="text" placeholder="Enter name" {...register('name')} />
           {errors.name && <p className="text-danger">{errors.name.message}</p>}
         </Form.Group>
 
         <Form.Group className="my-2" controlId="email">
           <Form.Label>Email Address</Form.Label>
-          <Form.Control
-            type="email"
-            placeholder="Enter email"
-            {...register('email')}
-          />
-          {errors.email && (
-            <p className="text-danger">{errors.email.message}</p>
-          )}
+          <Form.Control type="email" placeholder="Enter email" {...register('email')} />
+          {errors.email && <p className="text-danger">{errors.email.message}</p>}
         </Form.Group>
 
         <Form.Group className="my-2" controlId="role">
@@ -86,13 +80,8 @@ const CreateUserScreen = () => {
           {errors.role && <p className="text-danger">{errors.role.message}</p>}
         </Form.Group>
 
-        <Button
-          type="submit"
-          variant="primary"
-          className="mt-3"
-          disabled={isLoading}
-        >
-          Create User
+        <Button variant="primary" type="submit" className="mt-3" disabled={isLoading}>
+          {isLoading ? 'Creating user...' : 'Create User'}
         </Button>
 
         {isLoading && <Loader />}

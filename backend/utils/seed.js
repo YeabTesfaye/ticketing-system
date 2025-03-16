@@ -8,29 +8,29 @@ dotenv.config();
 const seedData = async () => {
   try {
     // Clear existing data
-    // await User.deleteMany({});
+    await User.deleteMany({});
     await Ticket.deleteMany({});
 
-    await User.findOneAndDelete({ email: 'admin1@example.com' });
+    await User.findOneAndDelete({ email: 'admin@example.com' });
 
     // Create admin user
     const adminUser = await User.create({
       name: 'Admin User',
-      email: 'admin1@example.com',
+      email: 'admin@example.com',
       password: 'password123',
       role: 'admin',
     });
 
     // Create 19 regular user
-    // const users = [];
-    // for (let i = 1; i <= 19; i++) {
-    //   users.push({
-    //     name: `User ${i}`,
-    //     email: `user${i}@example.com`,
-    //     password: 'password123',
-    //     role: 'user',
-    //   });
-    // }
+    const users = [];
+    for (let i = 1; i <= 19; i++) {
+      users.push({
+        name: `User ${i}`,
+        email: `user${i}@example.com`,
+        password: 'password123',
+        role: 'user',
+      });
+    }
 
     // Insert regular users
     // await User.insertMany(users);

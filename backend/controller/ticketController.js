@@ -17,12 +17,15 @@ export const createTicket = asyncHandler(async (req, res) => {
       description,
     });
 
-    res.status(201).json(ticket);
+    return res.status(201).json({
+      success: true,
+      ticket,
+    });
   } catch (error) {
     if (error instanceof ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ success: false, errors: error.errors });
     }
-    throw error;
+    return res.status(500).json({ success: false, message: 'Server Error' });
   }
 });
 
@@ -34,16 +37,13 @@ export const getTickets = asyncHandler(async (req, res) => {
   const limit = Number(req.query.limit) || 10;
   const skip = (page - 1) * limit;
 
-  let filter = {};
+  let filter = req.user.role === 'user' ? { user: req.user._id } : {};
 
-  // If the user is NOT an admin, only fetch their own tickets
-  if (req.user.role === 'user') {
-    filter.user = req.user._id;
-  }
   const totalTickets = await Ticket.countDocuments(filter);
   const tickets = await Ticket.find(filter).skip(skip).limit(limit);
 
-  res.json({
+  return res.status(200).json({
+    success: true,
     tickets,
     totalTickets,
     totalPages: Math.ceil(totalTickets / limit),
@@ -62,18 +62,24 @@ export const updateTicket = asyncHandler(async (req, res) => {
     const ticket = await Ticket.findById(req.params.id);
 
     if (!ticket) {
-      res.status(404);
-      throw new Error('Ticket not found');
+      return res.status(404).json({
+        success: false,
+        message: 'Ticket not found',
+      });
     }
 
     ticket.status = status;
     await ticket.save();
-    res.status(200).json(ticket);
+
+    return res.status(200).json({
+      success: true,
+      ticket,
+    });
   } catch (error) {
     if (error instanceof ZodError) {
-      return res.status(400).json({ errors: error.errors });
+      return res.status(400).json({ success: false, errors: error.errors });
     }
-    throw error;
+    return res.status(500).json({ success: false, message: 'Server Error' });
   }
 });
 
@@ -88,13 +94,20 @@ export const getTicketById = asyncHandler(async (req, res) => {
     );
 
     if (!ticket) {
-      res.status(404);
-      throw new Error('Ticket not found');
+      return res.status(404).json({
+        success: false,
+        message: 'Ticket not found',
+      });
     }
-    res.status(200).json(ticket);
+
+    return res.status(200).json({
+      success: true,
+      ticket,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Server Error', error: error.message });
-    throw new Error('Server Error');
+    return res
+      .status(500)
+      .json({ success: false, message: 'Server Error', error: error.message });
   }
 });
 
@@ -107,13 +120,21 @@ export const deleteTicket = asyncHandler(async (req, res) => {
     const ticket = await Ticket.findById(id);
 
     if (!ticket) {
-      res.status(404);
-      throw new Error('Ticket not found');
+      return res.status(404).json({
+        success: false,
+        message: 'Ticket not found',
+      });
     }
-    // Delete the ticket
+
     await Ticket.findByIdAndDelete(id);
-    res.status(200).json({ message: 'Ticket deleted successfully' });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Ticket deleted successfully',
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Server Error', error: error.message });
+    return res
+      .status(500)
+      .json({ success: false, message: 'Server Error', error: error.message });
   }
 });

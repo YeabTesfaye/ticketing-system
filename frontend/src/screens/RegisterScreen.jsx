@@ -44,11 +44,10 @@ const RegisterScreen = () => {
       const { name, email, password } = data;
 
       // If validation passes, proceed with registration
-      const res = await register({ name, email, password }).unwrap();
+      const res = await  register({ name, email, password }).unwrap();
       dispatch(setCredentials(res));
       navigate('/login');
     } catch (err) {
-      console.log(err);
       reset({ name: '', email: '', password: '', confirmPassword: '' });
       toast.error(err?.data?.message || err?.error || 'Registration failed');
     }

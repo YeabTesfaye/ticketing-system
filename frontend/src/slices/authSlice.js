@@ -11,8 +11,13 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action) => {
-      state.userInfo = action.payload;
-      localStorage.setItem('userInfo', JSON.stringify(action.payload));
+      if (action.payload.success) {
+        state.userInfo = action.payload.user;
+        localStorage.setItem('userInfo', JSON.stringify(action.payload.user));
+      } else {
+        state.userInfo = null;
+        localStorage.removeItem('userInfo');
+      }
     },
     logout: (state) => {
       state.userInfo = null;
@@ -20,5 +25,6 @@ const authSlice = createSlice({
     },
   },
 });
+
 export const { setCredentials, logout } = authSlice.actions;
 export default authSlice.reducer;

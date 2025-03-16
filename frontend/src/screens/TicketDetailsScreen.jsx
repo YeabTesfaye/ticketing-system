@@ -15,7 +15,6 @@ import { toast } from 'react-toastify';
 
 const TicketDetailsScreen = () => {
   const { selectedTicketId } = useSelector((state) => state.ticket);
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,20 +23,21 @@ const TicketDetailsScreen = () => {
     }
   }, [selectedTicketId, navigate]);
 
-  const id = selectedTicketId;
-
-  // Fetch ticket details using token
-  const { data: ticket, isLoading, error } = useGetTicketByIdQuery(id);
-
+  const {
+    data: ticketData,
+    isLoading,
+    error,
+    refetch,
+  } = useGetTicketByIdQuery(selectedTicketId);
   const [updateTicket] = useUpdateTicketStatusMutation();
   const [deleteTicket] = useDeleteTicketMutation();
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
-  // Get user info (assuming it is stored in Redux)
   const { userInfo } = useSelector((state) => state.auth);
 
-  // Handle loading and error states
+  // Destructure ticket object for easier use
+  const ticket = ticketData?.ticket;
+
   if (isLoading) return <Loader />;
   if (error)
     return <Message variant="danger">Error loading ticket details!</Message>;
@@ -45,9 +45,9 @@ const TicketDetailsScreen = () => {
   // Function to handle ticket status update
   const handleUpdateStatus = async (status) => {
     try {
-      await updateTicket({ id, status }).unwrap();
+      await updateTicket({ id: ticket?._id, status }).unwrap();
       toast.success('Ticket status updated successfully');
-      window.location.reload();
+      refetch();
     } catch (err) {
       toast.error(err?.data?.message || 'Failed to update ticket status');
     }
@@ -55,7 +55,7 @@ const TicketDetailsScreen = () => {
 
   const handleDeleteTicket = async () => {
     try {
-      await deleteTicket(id).unwrap();
+      await deleteTicket(ticket?._id).unwrap();
       toast.success('Ticket deleted successfully');
       navigate('/tickets');
     } catch (err) {
@@ -82,7 +82,6 @@ const TicketDetailsScreen = () => {
             <Col md={6}>
               <h5>Actions</h5>
               <div className="d-flex flex-wrap">
-                {/* Render the status update buttons based on the current status */}
                 {userInfo?.role === 'admin' && ticket.status === 'Open' && (
                   <>
                     <StatusButton
