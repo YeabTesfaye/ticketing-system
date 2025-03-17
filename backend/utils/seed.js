@@ -50,8 +50,6 @@ const seedData = async () => {
     // Insert tickets into the database
     await Ticket.insertMany(tickets);
 
-    console.log(tickets);
-
     console.log('Tickets have been seeded');
     process.exit(); // Exit after seeding is complete
   } catch (error) {

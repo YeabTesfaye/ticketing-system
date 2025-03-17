@@ -15,7 +15,6 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 const AdminUsersScreen = () => {
   const navigate = useNavigate();
   const { userInfo } = useSelector((state) => state.auth);
-  
 
   // Pagination model for DataGrid
   const [paginationModel, setPaginationModel] = useState({
@@ -28,7 +27,7 @@ const AdminUsersScreen = () => {
     limit: paginationModel.pageSize,
   };
 
-  const { data, isLoading, error } = useGetUsersQuery(queryParams, {
+  const { data, isLoading, error, refetch } = useGetUsersQuery(queryParams, {
     refetchOnMountOrArgChange: true, // Ensure refetch on param change
   });
 
@@ -73,7 +72,7 @@ const AdminUsersScreen = () => {
       try {
         await deleteUser(userId).unwrap();
         toast.success('User deleted successfully');
-        window.location.reload();
+        refetch();
       } catch (err) {
         toast.error(err?.data?.message || 'Error deleting user');
       }
