@@ -33,8 +33,8 @@ const seedData = async () => {
     }
 
     // Insert regular users
-    // await User.insertMany(users);
-    // console.log('Users have been seeded');
+    await User.insertMany(users);
+    console.log('Users have been seeded');
 
     // Create 20 tickets for the admin user
     const tickets = [];

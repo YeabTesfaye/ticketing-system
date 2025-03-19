@@ -16,7 +16,7 @@ app.use(
   cors({
     origin: [
       'http://localhost:3000',
-      'https://ticketing-system-frontend-static-8.vercel.app',
+      'https://ticketing-system-frontend-static-9.vercel.app',
     ],
     credentials: true,
   }),

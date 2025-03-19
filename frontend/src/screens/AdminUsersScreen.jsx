@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Container, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -34,10 +34,11 @@ const AdminUsersScreen = () => {
   const [deleteUser] = useDeleteUserMutation();
 
   // Redirect non-admins
-  if (userInfo?.role !== 'admin') {
-    navigate('/');
-    return null;
-  }
+  useEffect(() => {
+    if (userInfo?.role !== 'admin') {
+      navigate('/');
+    }
+  }, [navigate, userInfo]);
 
   // Define columns for DataGrid
   const columns = [

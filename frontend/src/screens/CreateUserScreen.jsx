@@ -16,7 +16,6 @@ const CreateUserScreen = () => {
 
   useEffect(() => {
     if (userInfo?.role !== 'admin') {
-      console.log('Unauthorized user, redirecting...');
       navigate('/');
     }
   }, [userInfo, navigate]);
@@ -34,7 +33,6 @@ const CreateUserScreen = () => {
 
   // Submit handler
   const submitHandler = async (data) => {
-
     try {
       const response = await createUser(data);
       if (response.error) {
@@ -61,14 +59,24 @@ const CreateUserScreen = () => {
       >
         <Form.Group className="my-2" controlId="name">
           <Form.Label>Name</Form.Label>
-          <Form.Control type="text" placeholder="Enter name" {...register('name')} />
+          <Form.Control
+            type="text"
+            placeholder="Enter name"
+            {...register('name')}
+          />
           {errors.name && <p className="text-danger">{errors.name.message}</p>}
         </Form.Group>
 
         <Form.Group className="my-2" controlId="email">
           <Form.Label>Email Address</Form.Label>
-          <Form.Control type="email" placeholder="Enter email" {...register('email')} />
-          {errors.email && <p className="text-danger">{errors.email.message}</p>}
+          <Form.Control
+            type="email"
+            placeholder="Enter email"
+            {...register('email')}
+          />
+          {errors.email && (
+            <p className="text-danger">{errors.email.message}</p>
+          )}
         </Form.Group>
 
         <Form.Group className="my-2" controlId="role">
@@ -80,7 +88,12 @@ const CreateUserScreen = () => {
           {errors.role && <p className="text-danger">{errors.role.message}</p>}
         </Form.Group>
 
-        <Button variant="primary" type="submit" className="mt-3" disabled={isLoading}>
+        <Button
+          variant="primary"
+          type="submit"
+          className="mt-3"
+          disabled={isLoading}
+        >
           {isLoading ? 'Creating user...' : 'Create User'}
         </Button>
 
